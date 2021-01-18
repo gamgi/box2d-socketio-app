@@ -1,6 +1,6 @@
 from typing import DefaultDict, Tuple, Set, TypeVar, Mapping, Generic, Type, Any, Union, Literal
 from collections import defaultdict
-from .base_component import Component
+from .base_component import Component, NullComponent
 
 T = TypeVar('T', bound=Mapping)
 
@@ -18,11 +18,11 @@ class Context(Generic[T]):
         """Create new entity and assign random id"""
 
         entity_id = self._new_id()
-        self.add(entity_id, *components)
+        self.upsert(entity_id, *components)
         return entity_id
 
-    def add(self, entity_id: str, *components: Component) -> str:
-        """Create new entity with given id"""
+    def upsert(self, entity_id: str, *components: Component) -> str:
+        """Create or update entity with given id"""
 
         self._add_entity_with_components(entity_id, components)
         self._update_components(entity_id, components)
@@ -31,7 +31,7 @@ class Context(Generic[T]):
     def new_singleton(self, component: Component) -> str:
         """Create new singleton entity"""
 
-        return self.add(component.component_name, component)
+        return self.upsert(component.component_name, component)
 
     def get_entites_with(self, *components: Type[Component]) -> Set[str]:
         """Return ids of entities with given components"""
@@ -60,8 +60,11 @@ class Context(Generic[T]):
         """Return component dataclasses for given entity and classes"""
 
         return tuple(
-            self.repository[component.component_name].get(entity_id, None) for component in components
-        )
+            self.repository[component.component_name].get(
+                entity_id,
+                NullComponent(component.component_name)  # type:ignore
+            )
+            for component in components)
 
     def get_updated_components(self, entity_id: str, *components: Type[Component], reset=True) -> Tuple[Component, ...]:
         """Return only updated component dataclasses for given entity and classes"""
