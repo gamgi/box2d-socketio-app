@@ -104,7 +104,12 @@ class Context(Generic[T]):
     def get_updated(self, entity_id: str, *components: Type[Component], reset=True) -> Tuple[Component, ...]:
         """Return only updated component dataclasses for given entity and classes"""
 
-        pass
+        been_updated = tuple(entity_id in self._updated_entities[component.component_name] for component in components)
+        zipped = zip(components, been_updated)
+        return tuple(
+            self.get_definitely(entity_id, component) if is_updated else None
+            for component, is_updated in zipped
+        )
 
     def mark_entity_updated(self, entity_id: str, *components: Union[Type[Component], Component]):
         """Marks entity updated to be retrieved for get_updated_nnn"""

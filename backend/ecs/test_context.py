@@ -190,3 +190,17 @@ class TestContext:
         c = Context(repository=empty_repository)
 
         assert c.get_updated_entities_for(Fake) == set()
+
+    def test_get_updated(self, empty_repository):
+        c = Context(repository=empty_repository)
+        c.upsert('1', Foo(1))
+        c.upsert('2', Bar(2))
+        c.get_all_updated_entities(reset=True)
+
+        a = c.get_updated('2', Foo, Bar)
+        assert a == (None, None)
+
+        c.upsert('1', Foo(2))
+        c.upsert('2', Bar(3))
+
+        assert c.get_updated('2', Foo, Bar) == (None, Bar(3))
