@@ -51,15 +51,17 @@ class Context(Generic[T]):
     def get_singleton(self, component: Type[Component], field: str = None):
         """Return singleton component dataclass"""
 
-        value, = self.get_components(component.component_name, component)  # type:ignore
+        value, = self.get(component.component_name, component)  # type:ignore
         if field:
             return getattr(value, field, None)
         return value
 
-    def get_components(self, entity_id: str, *components: Type[Component]) -> Tuple[Component, ...]:
+    def get(self, entity_id: str, *components: Type[Component]) -> Tuple[Component, ...]:
         """Return component dataclasses for given entity and classes"""
 
-        return tuple(self.repository[component.component_name][entity_id] for component in components)
+        return tuple(
+            self.repository[component.component_name].get(entity_id, None) for component in components
+        )
 
     def get_updated_components(self, entity_id: str, *components: Type[Component], reset=True) -> Tuple[Component, ...]:
         """Return only updated component dataclasses for given entity and classes"""

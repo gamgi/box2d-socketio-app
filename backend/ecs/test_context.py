@@ -47,7 +47,14 @@ class TestContext:
         c = Context(repository=empty_repository)
         c.add('1', value)
 
-        assert c.get_components('1', Foo) == (value,)
+        assert c.get('1', Foo) == (value,)
+
+    def test_get_nonexistent_component(self, empty_repository):
+        value = Foo(1)
+        c = Context(repository=empty_repository)
+        c.add('1', value)
+
+        assert c.get('1', Bar) == (None,)
 
     def test_new_component(self, empty_repository):
         value = Foo(1)
@@ -55,21 +62,21 @@ class TestContext:
         entity_id = c.new(value)
 
         assert entity_id == '0'
-        assert c.get_components(entity_id, Foo) == (value,)
+        assert c.get(entity_id, Foo) == (value,)
 
     def test_add_component_keeps_existing_data(self, empty_repository):
         c = Context(repository=empty_repository)
         entity_id = c.new(Foo(1))
         c.add(entity_id, Bar(2))
 
-        assert c.get_components(entity_id, Foo, Bar) == (Foo(1), Bar(2))
+        assert c.get(entity_id, Foo, Bar) == (Foo(1), Bar(2))
 
     def test_add_singleton_component(self, empty_repository):
         c = Context(repository=empty_repository)
         entity_id = c.new_singleton(SingleFoo(1))
 
         assert entity_id == SingleFoo.component_name
-        assert c.get_components(entity_id, SingleFoo) == (SingleFoo(1),)
+        assert c.get(entity_id, SingleFoo) == (SingleFoo(1),)
 
     def test_get_singleton_component(self, empty_repository):
         c = Context(repository=empty_repository)
@@ -79,3 +86,9 @@ class TestContext:
         assert c.get_singleton(SingleFoo) == SingleFoo(1)
         assert c.get_singleton(SingleFoo, 'value3') == 1
         assert c.get_singleton(SingleFoo, 'nonexistent') is None
+
+    def test_get_nonexisten_singleton_component(self, empty_repository):
+        c = Context(repository=empty_repository)
+        c.new_singleton(SingleFoo(1))
+
+        assert c.get_singleton(Foo) is None
