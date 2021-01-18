@@ -1,4 +1,4 @@
-from typing import DefaultDict, Tuple, Set, TypeVar, Mapping, Generic, Type, Any, Union, Literal
+from typing import DefaultDict, Tuple, Set, TypeVar, Mapping, Generic, Type, Union
 from collections import defaultdict
 from .base_component import Component, NullComponent
 
@@ -21,15 +21,21 @@ class Context(Generic[T]):
         self.upsert(entity_id, *components)
         return entity_id
 
+    def new_singleton(self, component: Component) -> str:
+        """Create new singleton entity"""
+
+        return self.upsert(component.component_name, component)
+
     def upsert(self, entity_id: str, *components: Component) -> str:
         """Create or update entity with given id"""
 
         self._add_entity_with_components(entity_id, components)
         self._update_components(entity_id, components)
+        self.mark_entity_updated(entity_id, *components)
         return entity_id
 
-    def new_singleton(self, component: Component) -> str:
-        """Create new singleton entity"""
+    def upsert_singleton(self, component: Component) -> str:
+        """Create or update singleton entity with given id"""
 
         return self.upsert(component.component_name, component)
 
@@ -41,12 +47,26 @@ class Context(Generic[T]):
     def get_updated_entities(self, reset=True) -> Set[str]:
         """Return ids of entities with any updated flag"""
 
-        pass
+        entity_ids_list = self._updated_entities.values()
+        if entity_ids_list:
+            updated = set.union(*entity_ids_list)
+        else:
+            return set()
+
+        if reset:
+            self._updated_entities.clear()
+
+        return updated
 
     def get_updated_entities_with(self, *components: Type[Component], reset=True) -> Set[str]:
         """Return ids of entities with updated flag for any of given components"""
 
-        pass
+        updated = set.union([self._updated_entities[component.component_name]  # type:ignore
+                             for component in components])
+        if reset:
+            for component in components:
+                self._updated_entities[component.component_name] -= updated  # type:ignore
+        return updated
 
     def get_singleton(self, component: Type[Component], field: str = None):
         """Return singleton component dataclass"""
@@ -70,6 +90,12 @@ class Context(Generic[T]):
         """Return only updated component dataclasses for given entity and classes"""
 
         pass
+
+    def mark_entity_updated(self, entity_id: str, *components: Union[Type[Component], Component]):
+        """Marks entity updated to be retrieved for get_updated_nnn"""
+
+        for component in components:
+            self._updated_entities[component.component_name].add(entity_id)  # type:ignore
 
     def _new_id(self) -> str:
         entity_id = str(self._counter)

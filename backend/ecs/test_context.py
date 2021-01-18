@@ -66,19 +66,28 @@ class TestContext:
         assert entity_id == '0'
         assert c.get(entity_id, Foo) == (value,)
 
-    def test_upsert_component_keeps_existing_data(self, empty_repository):
-        c = Context(repository=empty_repository)
-        entity_id = c.new(Foo(1))
-        c.upsert(entity_id, Bar(2))
-
-        assert c.get(entity_id, Foo, Bar) == (Foo(1), Bar(2))
-
     def test_new_singleton_component(self, empty_repository):
         c = Context(repository=empty_repository)
         entity_id = c.new_singleton(SingleFoo(1))
 
         assert entity_id == SingleFoo.component_name
         assert c.get(entity_id, SingleFoo) == (SingleFoo(1),)
+
+    def test_upsert_component_keeps_existing_data(self, empty_repository):
+        c = Context(repository=empty_repository)
+        entity_id = c.new(Foo(1))
+        entity_id = c.upsert(entity_id, Bar(2))
+
+        assert entity_id == '0'
+        assert c.get(entity_id, Foo, Bar) == (Foo(1), Bar(2))
+
+    def test_upsert_singleton(self, empty_repository):
+        c = Context(repository=empty_repository)
+        c.new_singleton(SingleFoo(1))
+        entity_id = c.upsert_singleton(SingleFoo(2))
+
+        assert entity_id == SingleFoo.component_name
+        assert c.get_singleton(SingleFoo) == SingleFoo(2)
 
     def test_get_singleton_component(self, empty_repository):
         c = Context(repository=empty_repository)
@@ -97,3 +106,25 @@ class TestContext:
         assert bool(value) is False
         assert isinstance(value, NullComponent)
         assert value.component_name == Foo.component_name
+
+    def test_upsert_marks_entity_updated(self, empty_repository):
+        c = Context(repository=empty_repository)
+        c.upsert('1', Foo(1))
+
+        assert c.get_updated_entities() == set('1')
+        assert c.get_updated_entities() == set()
+
+        c.upsert('1', Foo(2))
+
+        assert c.get_updated_entities() == set('1')
+
+    def test_upsert_singleton_marks_entity_updated(self, empty_repository):
+        c = Context(repository=empty_repository)
+        c.upsert('1', Foo(1))
+
+        assert c.get_updated_entities() == set('1')
+        assert c.get_updated_entities() == set()
+
+        c.upsert('1', Foo(2))
+
+        assert c.get_updated_entities() == set('1')
