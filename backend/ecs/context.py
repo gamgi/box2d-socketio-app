@@ -83,15 +83,17 @@ class Context(Generic[T]):
 
     def get(self, entity_id: str, *components: Type[Component]) -> Tuple[Component, ...]:
         """Return component dataclasses for given entity and classes"""
+
         try:
-            return tuple(
-                self.repository[component.component_name].get(
-                    entity_id,
-                    NullComponent(component.component_name)  # type:ignore
-                )
-                for component in components)
+            return tuple(self.get_maybe(entity_id, component) for component in components)
         except KeyError as err:
             raise UnknownComponentError(f'Repository does not have a key for {err}')
+
+    def get_maybe(self, entity_id: str, component: Type[Component]) -> Component:
+        """Return compoent dataclass safely (return dummy empty component if not found)"""
+
+        return self.repository[component.component_name]\
+            .get(entity_id, NullComponent(component.component_name))  # type:ignore
 
     def get_updated_components(self, entity_id: str, *components: Type[Component], reset=True) -> Tuple[Component, ...]:
         """Return only updated component dataclasses for given entity and classes"""
