@@ -111,20 +111,37 @@ class TestContext:
         c = Context(repository=empty_repository)
         c.upsert('1', Foo(1))
 
-        assert c.get_updated_entities() == set('1')
-        assert c.get_updated_entities() == set()
+        assert c.get_all_updated() == set('1')
+        assert c.get_all_updated() == set()
 
         c.upsert('1', Foo(2))
 
-        assert c.get_updated_entities() == set('1')
+        assert c.get_all_updated() == set('1')
 
     def test_upsert_singleton_marks_entity_updated(self, empty_repository):
         c = Context(repository=empty_repository)
         c.upsert('1', Foo(1))
 
-        assert c.get_updated_entities() == set('1')
-        assert c.get_updated_entities() == set()
+        assert c.get_all_updated() == set('1')
+        assert c.get_all_updated() == set()
 
         c.upsert('1', Foo(2))
 
-        assert c.get_updated_entities() == set('1')
+        assert c.get_all_updated() == set('1')
+
+    def test_get_updated(self, empty_repository):
+        c = Context(repository=empty_repository)
+        c.upsert('1', Foo(1))
+        c.upsert('2', Bar(2))
+        c.get_all_updated(reset=True)
+
+        assert c.get_updated(Bar) == set()
+
+        c.upsert('1', Foo(2))
+        c.upsert('2', Bar(3))
+
+        assert c.get_updated(Bar) == set('2')
+        assert c.get_all_updated(reset=False) == set('1')
+        assert c.get_updated(Foo) == set('1')
+        assert c.get_all_updated() == set()
+        assert c.get_updated(Foo) == set()

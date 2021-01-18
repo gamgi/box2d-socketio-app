@@ -44,7 +44,7 @@ class Context(Generic[T]):
 
         pass
 
-    def get_updated_entities(self, reset=True) -> Set[str]:
+    def get_all_updated(self, reset=True) -> Set[str]:
         """Return ids of entities with any updated flag"""
 
         entity_ids_list = self._updated_entities.values()
@@ -58,11 +58,11 @@ class Context(Generic[T]):
 
         return updated
 
-    def get_updated_entities_with(self, *components: Type[Component], reset=True) -> Set[str]:
+    def get_updated(self, *components: Type[Component], reset=True) -> Set[str]:
         """Return ids of entities with updated flag for any of given components"""
-
-        updated = set.union([self._updated_entities[component.component_name]  # type:ignore
-                             for component in components])
+        entity_ids_list = [self._updated_entities[component.component_name]  # type:ignore
+                           for component in components]
+        updated = set.union(*entity_ids_list)
         if reset:
             for component in components:
                 self._updated_entities[component.component_name] -= updated  # type:ignore
