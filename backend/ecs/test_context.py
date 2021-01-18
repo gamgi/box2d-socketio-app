@@ -85,6 +85,22 @@ class TestContext:
         assert entity_id == SingleFoo.component_name
         assert c.get(entity_id, SingleFoo) == (SingleFoo(1),)
 
+    def test_get_maybe(self, empty_repository):
+        c = Context(repository=empty_repository)
+        entity_id = c.new(Foo(1))
+
+        assert c.get_maybe(entity_id, Foo) == Foo(1)
+        value = c.get_maybe(entity_id, Bar)
+        assert isinstance(value, NullComponent)
+        assert value.something is None
+
+    def test_get_definitely(self, empty_repository):
+        c = Context(repository=empty_repository)
+        entity_id = c.new(Foo(1))
+
+        assert c.get_definitely(entity_id, Foo) == Foo(1)
+        assert c.get_definitely(entity_id, Bar) is None
+
     def test_upsert_component_keeps_existing_data(self, empty_repository):
         c = Context(repository=empty_repository)
         entity_id = c.new(Foo(1))
