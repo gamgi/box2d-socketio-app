@@ -1,6 +1,7 @@
 from typing import DefaultDict, Tuple, Set, TypeVar, Mapping, Generic, Type, Union
 from collections import defaultdict
 from .base_component import Component, NullComponent
+from .exc import UnknownComponentError
 
 T = TypeVar('T', bound=Mapping)
 
@@ -29,8 +30,12 @@ class Context(Generic[T]):
     def upsert(self, entity_id: str, *components: Component) -> str:
         """Create or update entity with given id"""
 
+        try:
+            self._update_components(entity_id, components)
+        except KeyError as err:
+            raise UnknownComponentError(f'Repository does not have a key for {err}')
+
         self._add_entity_with_components(entity_id, components)
-        self._update_components(entity_id, components)
         self.mark_entity_updated(entity_id, *components)
         return entity_id
 
@@ -78,13 +83,15 @@ class Context(Generic[T]):
 
     def get(self, entity_id: str, *components: Type[Component]) -> Tuple[Component, ...]:
         """Return component dataclasses for given entity and classes"""
-
-        return tuple(
-            self.repository[component.component_name].get(
-                entity_id,
-                NullComponent(component.component_name)  # type:ignore
-            )
-            for component in components)
+        try:
+            return tuple(
+                self.repository[component.component_name].get(
+                    entity_id,
+                    NullComponent(component.component_name)  # type:ignore
+                )
+                for component in components)
+        except KeyError as err:
+            raise UnknownComponentError(f'Repository does not have a key for {err}')
 
     def get_updated_components(self, entity_id: str, *components: Type[Component], reset=True) -> Tuple[Component, ...]:
         """Return only updated component dataclasses for given entity and classes"""

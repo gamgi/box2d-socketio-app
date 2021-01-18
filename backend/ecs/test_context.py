@@ -2,6 +2,7 @@ import pytest
 from typing import TypedDict, Dict
 from ecs.context import Context
 from ecs.base_component import Component, NullComponent
+from ecs.exc import UnknownComponentError
 from dataclasses import dataclass
 
 
@@ -27,6 +28,11 @@ class SingleFoo(Component):
 class NestedFoo(Component):
     component_name = 'nestedfoo'
     foo: Foo
+
+
+@dataclass
+class Fake(Component):
+    component_name = 'fake'
 
 
 MyRepository = TypedDict('MyRepository', {
@@ -58,6 +64,12 @@ class TestContext:
         assert isinstance(value, NullComponent)
         assert value.component_name == Bar.component_name
 
+    def test_get_nonexistent_component_class(self, empty_repository):
+        c = Context(repository=empty_repository)
+
+        with pytest.raises(UnknownComponentError):
+            c.get('1', Fake)
+
     def test_new_component(self, empty_repository):
         value = Foo(1)
         c = Context(repository=empty_repository)
@@ -80,6 +92,12 @@ class TestContext:
 
         assert entity_id == '0'
         assert c.get(entity_id, Foo, Bar) == (Foo(1), Bar(2))
+
+    def test_upsert_nonexistent_component_class(self, empty_repository):
+        c = Context(repository=empty_repository)
+
+        with pytest.raises(UnknownComponentError):
+            c.upsert('1', Fake)  # type: ignore
 
     def test_upsert_singleton(self, empty_repository):
         c = Context(repository=empty_repository)
@@ -145,3 +163,14 @@ class TestContext:
         assert c.get_updated(Foo) == set('1')
         assert c.get_all_updated() == set()
         assert c.get_updated(Foo) == set()
+
+    def test_get_updated_nonexistent(self, empty_repository):
+        c = Context(repository=empty_repository)
+        c.upsert('1', Foo(1))
+
+        assert c.get_updated(Bar) == set()
+
+    def test_get_updated_nonexistent_class(self, empty_repository):
+        c = Context(repository=empty_repository)
+
+        assert c.get_updated(Fake) == set()
