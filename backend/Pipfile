@@ -1,0 +1,34 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+rope = "*"
+autopep8 = "*"
+flake8 = "*"
+mypy = "*"
+pytest = "*"
+pytest-watch = "*"
+py-ts-interfaces = "*"
+watchgod = "*"
+
+[packages]
+box2d = "*"
+dataclass-factory = "*"
+
+[requires]
+python_version = "3.8"
+
+[scripts]
+"generate:types" = "bash -c \"./bin/generate_types.sh\""
+"check" = "bash -c \"pipenv run lint && pipenv run flake;  pipenv run mypy\""
+"dev" = "pipenv run watchgod app.main"
+"flake" = "flake8 --count"
+"watch" = "ptw -- --disable-pytest-warnings -vv"
+"lint" = "autopep8 --in-place --aggressive --aggressive --recursive --max-line-length 120 ./"
+"mypy" = "mypy --check-untyped-defs ./"
+"start" = "python app.py"
+
+[pipenv]
+allow_prereleases = true
