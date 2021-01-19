@@ -1,5 +1,7 @@
-import pytest
 from typing import TypedDict, Dict
+import pytest
+from unittest.mock import ANY
+from operator import itemgetter
 from ecs.context import Context
 from ecs.base_component import Component, NullComponent
 from ecs.exc import UnknownComponentError
@@ -101,6 +103,18 @@ class TestContext:
         assert c.get_definitely(entity_id, Foo) == Foo(1)
         assert c.get_definitely(entity_id, Bar) is None
 
+    def test_all(self, empty_repository):
+        c = Context(repository=empty_repository)
+        c.upsert('0', Foo(1))
+        c.upsert('1', Bar(2))
+        c.upsert('2', Foo(3), Bar(4))
+
+        unsorted_data = c.all(Foo, optional_components=[Bar])
+        data = sorted(unsorted_data, key=itemgetter(0))
+        assert data[0] == ('0', Foo(1), ANY)
+        assert data[1] == ('2', Foo(3), Bar(4))
+        assert isinstance(data[0][2], NullComponent)
+
     def test_upsert_component_keeps_existing_data(self, empty_repository):
         c = Context(repository=empty_repository)
         entity_id = c.new(Foo(1))
@@ -180,7 +194,7 @@ class TestContext:
         assert c.get_all_updated_entities() == set()
         assert c.get_updated_entities_for(Foo) == set()
 
-    def test_get_updated_entites_for_nonexistent(self, empty_repository):
+    def test_get_updated_entities_for_nonexistent(self, empty_repository):
         c = Context(repository=empty_repository)
         c.upsert('1', Foo(1))
 
@@ -213,9 +227,9 @@ class TestContext:
         c.upsert('2', Bar(2))
         c.upsert('3', Foo(3), Bar(4))
 
-        assert c.get_entites_with(Foo) == {'1', '3'}
-        assert c.get_entites_with(Bar) == {'2', '3'}
+        assert c.get_entities_with(Foo) == {'1', '3'}
+        assert c.get_entities_with(Bar) == {'2', '3'}
 
     def test_get_entities_with_nonexistent_class(self, empty_repository):
         c = Context(repository=empty_repository)
-        assert c.get_entites_with(Fake) == set()
+        assert c.get_entities_with(Fake) == set()

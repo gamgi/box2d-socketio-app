@@ -1,4 +1,4 @@
-from typing import DefaultDict, Tuple, Set, TypeVar, Mapping, Generic, Type, Union
+from typing import DefaultDict, Tuple, Set, List, TypeVar, Mapping, Generic, Type, Union
 from collections import defaultdict
 from .base_component import Component, NullComponent
 from .exc import UnknownComponentError
@@ -44,13 +44,15 @@ class Context(Generic[T]):
 
         return self.upsert(component.component_name, component)
 
-    def get_entites_with(self, *components: Type[Component]) -> Set[str]:
+    def get_entities_with(self, *components: Type[Component], some=False) -> Set[str]:
         """Return ids of entities with given components"""
 
         entity_ids_list = [
             self.entities[component.component_name]
             for component in components
         ]
+        if some:
+            return set.union(*entity_ids_list)
         return set.intersection(*entity_ids_list)
 
     def get_all_updated_entities(self, reset=True) -> Set[str]:
@@ -84,6 +86,19 @@ class Context(Generic[T]):
         if field:
             return getattr(value, field, None)
         return value
+
+    def all(self, *required_components: Type[Component],
+            optional_components: List[Type[Component]] = []) -> List[Tuple]:
+        """Return list of (entity_id, component1, component2, ...) for given classes"""
+
+        entities = self.get_entities_with(*required_components)
+        return [
+            tuple((
+                entity_id,
+                *self.get(entity_id, *required_components),
+                *self.get(entity_id, *optional_components)
+            )) for entity_id in entities
+        ]
 
     def get(self, entity_id: str, *components: Type[Component]) -> Tuple[Component, ...]:
         """Return component dataclasses for given entity and classes"""
