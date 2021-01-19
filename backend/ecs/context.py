@@ -97,18 +97,24 @@ class Context(Generic[T]):
     def get_maybe(self, entity_id: str, component: Type[Component]) -> Component:
         """Return component dataclass safely (return NullComponent if not found)"""
 
-        return self.repository[component.component_name]\
-            .get(entity_id, NullComponent(component.component_name))  # type:ignore
+        return self.repository[component.component_name].get(  # type: ignore
+            entity_id,
+            NullComponent(component.component_name)  # type:ignore
+        )
 
-    def get_definitely(self, entity_id: str, component: Type[Component]) -> Component:
+    def get_definitely(self, entity_id: str, component: Type[Component]) -> Union[Component, None]:
         """Return compoent dataclass or None"""
 
         return self.repository[component.component_name].get(entity_id, None)  # type:ignore
 
-    def get_updated(self, entity_id: str, *components: Type[Component], reset=True) -> Tuple[Component, ...]:
+    def get_updated(self, entity_id: str, *components: Type[Component],
+                    reset=True) -> Tuple[Union[Component, None], ...]:
         """Return only updated component dataclasses for given entity and classes"""
 
-        been_updated = tuple(entity_id in self._updated_entities[component.component_name] for component in components)
+        been_updated = tuple(
+            entity_id in self._updated_entities[component.component_name]  # type:ignore
+            for component in components
+        )
         zipped = zip(components, been_updated)
         if reset:
             for component in components:
