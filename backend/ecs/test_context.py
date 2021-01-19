@@ -115,8 +115,6 @@ class TestContext:
         with pytest.raises(UnknownComponentError):
             c.upsert('1', Fake)  # type: ignore
 
-        # TODO assert c.get_entites_with(Fake) == None
-
     def test_upsert_singleton(self, empty_repository):
         c = Context(repository=empty_repository)
         c.new_singleton(SingleFoo(1))
@@ -208,3 +206,16 @@ class TestContext:
         assert c.get_updated('2', Foo, Bar) == (None, Bar(3))
         assert c.get_updated('2', Foo, Bar) == (None, None)
         assert c.get_updated('1', Foo, Bar) == (Foo(2), None)
+
+    def test_get_entities_with(self, empty_repository):
+        c = Context(repository=empty_repository)
+        c.upsert('1', Foo(1))
+        c.upsert('2', Bar(2))
+        c.upsert('3', Foo(3), Bar(4))
+
+        assert c.get_entites_with(Foo) == {'1', '3'}
+        assert c.get_entites_with(Bar) == {'2', '3'}
+
+    def test_get_entities_with_nonexistent_class(self, empty_repository):
+        c = Context(repository=empty_repository)
+        assert c.get_entites_with(Fake) == set()

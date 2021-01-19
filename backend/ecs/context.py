@@ -47,7 +47,11 @@ class Context(Generic[T]):
     def get_entites_with(self, *components: Type[Component]) -> Set[str]:
         """Return ids of entities with given components"""
 
-        pass
+        entity_ids_list = [
+            self.entities[component.component_name]  # type: ignore
+            for component in components
+        ]
+        return set.intersection(*entity_ids_list)
 
     def get_all_updated_entities(self, reset=True) -> Set[str]:
         """Return ids of entities with any updated flag"""
