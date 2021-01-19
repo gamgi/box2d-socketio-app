@@ -106,6 +106,10 @@ class Context(Generic[T]):
 
         been_updated = tuple(entity_id in self._updated_entities[component.component_name] for component in components)
         zipped = zip(components, been_updated)
+        if reset:
+            for component in components:
+                self._updated_entities[component.component_name].discard(entity_id)  # type:ignore
+
         return tuple(
             self.get_definitely(entity_id, component) if is_updated else None
             for component, is_updated in zipped
