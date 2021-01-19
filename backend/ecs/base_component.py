@@ -1,13 +1,17 @@
+from typing import TYPE_CHECKING
 from abc import ABC, abstractmethod
 
-
-class Component(ABC):
-    # attempts to ensure component_name is defined, but does cause some type trouble
-    @property
-    @classmethod
-    @abstractmethod
-    def component_name(cls) -> str:
-        raise NotImplementedError()
+if TYPE_CHECKING:
+    class Component(ABC):
+        component_name: str
+else:
+    class Component(ABC):
+        # attempts to ensure component_name is defined, but does cause some type trouble
+        @property
+        @classmethod
+        @abstractmethod
+        def component_name(cls) -> str:
+            raise NotImplementedError()
 
 
 class NullComponent(Component):

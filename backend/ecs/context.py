@@ -3,7 +3,7 @@ from collections import defaultdict
 from .base_component import Component, NullComponent
 from .exc import UnknownComponentError
 
-T = TypeVar('T', bound=Mapping)
+T = TypeVar('T', bound=Mapping[str, Mapping[str, Component]])
 
 
 class Context(Generic[T]):
@@ -48,7 +48,7 @@ class Context(Generic[T]):
         """Return ids of entities with given components"""
 
         entity_ids_list = [
-            self.entities[component.component_name]  # type: ignore
+            self.entities[component.component_name]
             for component in components
         ]
         return set.intersection(*entity_ids_list)
@@ -70,18 +70,17 @@ class Context(Generic[T]):
     def get_updated_entities_for(self, *components: Type[Component], reset=True) -> Set[str]:
         """Return ids of entities with updated flag for any of given components"""
 
-        entity_ids_list = [self._updated_entities[component.component_name]  # type:ignore
-                           for component in components]
+        entity_ids_list = [self._updated_entities[component.component_name] for component in components]
         updated = set.union(*entity_ids_list)
         if reset:
             for component in components:
-                self._updated_entities[component.component_name] -= updated  # type:ignore
+                self._updated_entities[component.component_name] -= updated
         return updated
 
     def get_singleton(self, component: Type[Component], field: str = None):
         """Return singleton component dataclass"""
 
-        value, = self.get(component.component_name, component)  # type:ignore
+        value, = self.get(component.component_name, component)
         if field:
             return getattr(value, field, None)
         return value
@@ -97,28 +96,28 @@ class Context(Generic[T]):
     def get_maybe(self, entity_id: str, component: Type[Component]) -> Component:
         """Return component dataclass safely (return NullComponent if not found)"""
 
-        return self.repository[component.component_name].get(  # type: ignore
+        return self.repository[component.component_name].get(
             entity_id,
-            NullComponent(component.component_name)  # type:ignore
+            NullComponent(component.component_name)
         )
 
     def get_definitely(self, entity_id: str, component: Type[Component]) -> Union[Component, None]:
         """Return compoent dataclass or None"""
 
-        return self.repository[component.component_name].get(entity_id, None)  # type:ignore
+        return self.repository[component.component_name].get(entity_id, None)
 
     def get_updated(self, entity_id: str, *components: Type[Component],
                     reset=True) -> Tuple[Union[Component, None], ...]:
         """Return only updated component dataclasses for given entity and classes"""
 
         been_updated = tuple(
-            entity_id in self._updated_entities[component.component_name]  # type:ignore
+            entity_id in self._updated_entities[component.component_name]
             for component in components
         )
         zipped = zip(components, been_updated)
         if reset:
             for component in components:
-                self._updated_entities[component.component_name].discard(entity_id)  # type:ignore
+                self._updated_entities[component.component_name].discard(entity_id)
 
         return tuple(
             self.get_definitely(entity_id, component) if is_updated else None
@@ -129,7 +128,7 @@ class Context(Generic[T]):
         """Marks entity updated to be retrieved for get_updated_nnn"""
 
         for component in components:
-            self._updated_entities[component.component_name].add(entity_id)  # type:ignore
+            self._updated_entities[component.component_name].add(entity_id)
 
     def _new_id(self) -> str:
         entity_id = str(self._counter)
@@ -146,4 +145,4 @@ class Context(Generic[T]):
 
     def _update_components(self, entity_id: str, components: Tuple[Component, ...]):
         for component in components:
-            self.repository[component.component_name][entity_id] = component
+            self.repository[component.component_name][entity_id] = component  # type: ignore
