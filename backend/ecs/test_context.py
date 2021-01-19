@@ -115,6 +115,18 @@ class TestContext:
         assert data[1] == ('2', Foo(3), Bar(4))
         assert isinstance(data[0][2], NullComponent)
 
+    def test_all_dict(self, empty_repository):
+        c = Context(repository=empty_repository)
+        c.upsert('0', Foo(1))
+        c.upsert('1', Bar(2))
+        c.upsert('2', Foo(3), Bar(4))
+
+        unsorted_data = c.all_dict(Foo, optional_components=[Bar])
+        assert unsorted_data == {
+            '0': (Foo(1), ANY),
+            '2': (Foo(3), Bar(4)),
+        }
+
     def test_upsert_component_keeps_existing_data(self, empty_repository):
         c = Context(repository=empty_repository)
         entity_id = c.new(Foo(1))

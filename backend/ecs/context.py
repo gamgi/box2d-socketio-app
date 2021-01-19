@@ -1,4 +1,4 @@
-from typing import DefaultDict, Tuple, Set, List, TypeVar, Mapping, Generic, Type, Union
+from typing import DefaultDict, Tuple, Set, List, Dict, TypeVar, Mapping, Generic, Type, Union
 from collections import defaultdict
 from .base_component import Component, NullComponent
 from .exc import UnknownComponentError
@@ -99,6 +99,18 @@ class Context(Generic[T]):
                 *self.get(entity_id, *optional_components)
             )) for entity_id in entities
         ]
+
+    def all_dict(self, *required_components: Type[Component],
+                 optional_components: List[Type[Component]] = []) -> Dict[str, Tuple]:
+        """Return list of (entity_id, component1, component2, ...) for given classes"""
+
+        entities = self.get_entities_with(*required_components)
+        return {
+            entity_id: tuple((
+                *self.get(entity_id, *required_components),
+                *self.get(entity_id, *optional_components)
+            )) for entity_id in entities
+        }
 
     def get(self, entity_id: str, *components: Type[Component]) -> Tuple[Component, ...]:
         """Return component dataclasses for given entity and classes"""
