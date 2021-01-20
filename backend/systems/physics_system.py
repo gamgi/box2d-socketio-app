@@ -21,10 +21,22 @@ class PhysicsSystem(System):
         world = self.context.get_singleton(Box2DWorld, field='world')
         entity_data = self.context.all_dict(Box2DBody, optional_components=[Position, Velocity])
         self.do_update(entity_data, world, dt)
+        self.mark_entities_updated(entity_data)
 
     def do_update(self, entity_data: List[Tuple], world: b2World, dt: float) -> None:
         world.Step(dt, BOX2D_SETTINGS['vel_iters'], BOX2D_SETTINGS['pos_iters'])
         world.ClearForces()
+
+    def mark_entities_updated(self, entity_data: List[Tuple]):
+        for entity_id, data in entity_data.items():
+            body, position, velocity = data
+            if not body.body.awake:
+                continue
+
+            if position:
+                self.context.mark_entity_updated(entity_id, Position)
+            if velocity:
+                self.context.mark_entity_updated(entity_id, Velocity)
 
     def _create_world(self):
         world = b2World(gravity=(0, -10), doSleep=True)

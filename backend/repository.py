@@ -13,7 +13,7 @@ Repository = TypedDict('Repository', {
 def repository_factory():
     columns = [component.component_name for component in COMPONENTS]
     unique_columns = _validate_columns(columns)
-    return Repository(dict.fromkeys(unique_columns, {}))
+    return Repository({column: dict() for column in unique_columns})
 
 
 def _validate_columns(columns):

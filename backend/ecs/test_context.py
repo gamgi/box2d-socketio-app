@@ -121,8 +121,8 @@ class TestContext:
         c.upsert('1', Bar(2))
         c.upsert('2', Foo(3), Bar(4))
 
-        unsorted_data = c.all_dict(Foo, optional_components=[Bar])
-        assert unsorted_data == {
+        data = c.all_dict(Foo, optional_components=[Bar])
+        assert data == {
             '0': (Foo(1), ANY),
             '2': (Foo(3), Bar(4)),
         }
