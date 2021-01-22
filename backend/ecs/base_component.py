@@ -4,6 +4,9 @@ from abc import ABC, abstractmethod
 if TYPE_CHECKING:
     class Component(ABC):
         component_name: str
+
+        def __register_entity__(self, entity_id: str):
+            pass
 else:
     class Component(ABC):
         # attempts to ensure component_name is defined, but does cause some type trouble
@@ -12,6 +15,9 @@ else:
         @abstractmethod
         def component_name(cls) -> str:
             raise NotImplementedError()
+
+        def __register_entity__(self, entity_id: str):
+            pass
 
 
 class NullComponent(Component):

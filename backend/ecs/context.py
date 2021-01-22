@@ -37,6 +37,11 @@ class Context(Generic[T]):
 
         self._add_entity_with_components(entity_id, components)
         self.mark_entity_updated(entity_id, *components)
+
+        for component in components:
+            if hasattr(component, '__register_entity__'):
+                component.__register_entity__(entity_id)
+
         return entity_id
 
     def upsert_singleton(self, component: Component) -> str:

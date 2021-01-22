@@ -1,6 +1,6 @@
 from typing import TypedDict, Dict
 import pytest
-from unittest.mock import ANY
+from unittest.mock import MagicMock, ANY
 from operator import itemgetter
 from ecs.context import Context
 from ecs.base_component import Component, NullComponent
@@ -12,6 +12,9 @@ from dataclasses import dataclass
 class Foo(Component):
     component_name = 'foo'
     value: int
+
+    def __register_entity__(self, entity_id: str):
+        self.secret = entity_id
 
 
 @dataclass
@@ -177,6 +180,13 @@ class TestContext:
         c.upsert('1', Foo(2))
 
         assert c.get_all_updated_entities() == set('1')
+
+    def test_upsert_calls_register_entity(self, empty_repository):
+        c = Context(repository=empty_repository)
+        callback = MagicMock()
+        c.upsert('my_id', MagicMock(component_name='foo', __register_entity__=callback))
+
+        callback.assert_called_with('my_id')
 
     def test_upsert_singleton_marks_entity_updated(self, empty_repository):
         c = Context(repository=empty_repository)
