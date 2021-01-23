@@ -22,7 +22,7 @@ class TestGame:
 
         response = game.get_rooms()
         assert response.rooms == [si.RoomMeta(
-            id='0',
+            id='room0',
             name='my room',
             players=['player1'],
             max_players=4,
@@ -55,7 +55,7 @@ class TestGame:
 
         response = game.get_rooms()
         assert response.rooms == [si.RoomMeta(
-            id='0',
+            id='room0',
             name='my room',
             players=[self.sid],
             max_players=4,
@@ -109,7 +109,7 @@ class TestGame:
         callback.assert_called_once_with(si.ShortSyncDTO(updates=[]), room_id)
         callback.reset_mock()
 
-        game.contexts['0'].upsert('0', Position.at([0, 0]))
+        game.contexts['room0'].upsert('0', Position.at([0, 0]))
         game.update_short(1, callback)
         updates = callback.call_args_list[0][0][0].updates
         assert updates == [si.ShortEntityData(id='0', position=(0.0, 0.0), velocity=None)]
@@ -119,10 +119,10 @@ class TestGame:
         game = Game([Mock(spec=[])])
         game.create_room(self.sid, ci.CreateRoomDTO(name='my room 1', private=False), Mock())
 
-        game.contexts['0'].upsert('0', Position.at([0, 0]), Box2DBody(body))
+        game.contexts['room0'].upsert('0', Position.at([0, 0]), Box2DBody(body))
 
         game.update_short(1, Mock())
-        assert game.contexts['0'].get_all_updated_entities() == {'0'}
+        assert game.contexts['room0'].get_all_updated_entities() == {'0'}
 
     def test_update_long(self):
         body = Mock(awake=True, position=(1, 2), fixtures=[])
@@ -130,7 +130,7 @@ class TestGame:
         game.create_room(self.sid, ci.CreateRoomDTO(name='my room 1', private=False), Mock())
         callback = Mock()
 
-        game.contexts['0'].upsert('0', Box2DBody(body))
+        game.contexts['room0'].upsert('0', Box2DBody(body))
         game.update_short(1, Mock())
         game.update_long(callback)
 

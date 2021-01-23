@@ -63,25 +63,25 @@ class Game:
             except NotImplementedError:
                 pass
 
-    def update_short(self, dt: float, callback_emit: Callable):
+    def update_short(self, dt: float, callback_emit: Callable, sort: bool = False):
         for room_id, context in self.contexts.items():
             self.trigger_event(ExternalEvent.UPDATE_FRAME, room_id, dt)
 
-            updates = serializer.create_short_sync(context)
+            updates = serializer.create_short_sync(context, sort)
             callback_emit(updates, room_id)
 
-    def update_long(self, callback_emit: Callable):
+    def update_long(self, callback_emit: Callable, sort: bool = False):
         for room_id, context in self.contexts.items():
             self.trigger_event(ExternalEvent.UPDATE, room_id)
 
-            updates = serializer.create_long_sync(context)
+            updates = serializer.create_long_sync(context, sort)
             callback_emit(updates, room_id)
 
     def _get_players(self) -> Set[str]:
         return set(player_id for room in self.rooms.values() for player_id in room.players)
 
     def _new_id(self) -> str:
-        return str(len(self.rooms.values()))
+        return f'room{len(self.rooms.values())}'
 
     def _is_in_a_room(self, sid: str):
         return sid in self._get_players()
