@@ -17,7 +17,7 @@ def system(context):
 class TestPhysicsSystem:
     def test_on_game_init_creates_world(self, system, context):
         system.on_game_init(None)
-        assert context.get_singleton(Box2DWorld)
+        assert context.singleton(Box2DWorld)
 
     def test_on_update_frame_calls_step(self, system):
         world = Mock(bodies_gen=[])

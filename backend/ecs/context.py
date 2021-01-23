@@ -84,10 +84,10 @@ class Context(Generic[T]):
                 self._updated_entities[component.component_name] -= updated
         return updated
 
-    def get_singleton(self, component: Type[Component], field: str = None):
+    def singleton(self, component: Type[Component], field: str = None):
         """Return singleton component dataclass"""
 
-        value, = self.get(component.component_name, component)
+        value = self.component(component.component_name, component)
         if field:
             return getattr(value, field, None)
         return value
@@ -100,8 +100,8 @@ class Context(Generic[T]):
         return [
             tuple((
                 entity_id,
-                *self.get(entity_id, *required_components),
-                *self.get(entity_id, *optional_components)
+                *self.components(entity_id, *required_components),
+                *self.components(entity_id, *optional_components)
             )) for entity_id in entities
         ]
 
@@ -112,12 +112,20 @@ class Context(Generic[T]):
         entities = self.get_entities_with(*required_components)
         return {
             entity_id: tuple((
-                *self.get(entity_id, *required_components),
-                *self.get(entity_id, *optional_components)
+                *self.components(entity_id, *required_components),
+                *self.components(entity_id, *optional_components)
             )) for entity_id in entities
         }
 
-    def get(self, entity_id: str, *components: Type[Component]) -> Tuple[Component, ...]:
+    def component(self, entity_id: str, component: Type[Component]) -> Component:
+        """Return componen dataclass for given entity and class"""
+
+        try:
+            return self.get_maybe(entity_id, component)
+        except KeyError as err:
+            raise UnknownComponentError(f'Repository does not have a key for {err}')
+
+    def components(self, entity_id: str, *components: Type[Component]) -> Tuple[Component, ...]:
         """Return component dataclasses for given entity and classes"""
 
         try:

@@ -18,7 +18,7 @@ class PhysicsSystem(System):
         self._create_world()
 
     def on_update_frame(self, dt: float):
-        world = self.context.get_singleton(Box2DWorld, field='world')
+        world = self._get_world()
         entity_data = self.context.all_dict(Box2DBody, optional_components=[Position, Velocity])
         self.do_update(entity_data, world, dt)
         self.mark_entities_updated(entity_data)
@@ -47,3 +47,6 @@ class PhysicsSystem(System):
             shapes=b2EdgeShape(vertices=[(-20, -4), (20, -4)]),
             userData='floor'
         )
+
+    def _get_world(self):
+        return self.context.singleton(Box2DWorld, field='world')
