@@ -1,14 +1,22 @@
 from typing import TYPE_CHECKING
+from enum import Enum
 from abc import ABC, abstractmethod
+
+
+Sync = Enum('Sync', ['SHORT', 'LONG', 'NO_SYNC'])
+
 
 if TYPE_CHECKING:
     class Component(ABC):
         component_name: str
+        sync: Sync
 
         def __register_entity__(self, entity_id: str):
             pass
 else:
     class Component(ABC):
+        sync: Sync = Sync.NO_SYNC
+
         # attempts to ensure component_name is defined, but does cause some type trouble
         @property
         @classmethod

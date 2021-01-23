@@ -83,16 +83,16 @@ class ShortEntityData(Interface):
 
 
 @dataclass
-class ShortSyncDTO(Interface):
-    updates: List[ShortEntityData]
-
-
-@dataclass
 class EntityData(Interface):
     id: str
     position: Optional[List[float]] = None
     velocity: Optional[List[float]] = None
     shape: Optional[Union[PolygonShapeData, ArcShapeData, RectShapeData]] = None
+
+
+@dataclass
+class ShortSyncDTO(Interface):
+    updates: List[ShortEntityData]
 
 
 @dataclass

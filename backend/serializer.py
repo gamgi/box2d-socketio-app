@@ -3,12 +3,41 @@ from ecs.context import Context
 import server_interfaces as si
 from Box2D import b2Body, b2Shape, b2CircleShape, b2PolygonShape
 from components import Box2DBody, Position, Velocity
+from components import SHORT_SYNC_COMPONENTS, LONG_SYNC_COMPONENTS
 
 Shape = Union[si.RectShapeData, si.ArcShapeData]
 
 
-def create_short_sync(entity_id: str, context: Context) -> si.ShortEntityData:
+def create_short_sync(context: Context, sort=False) -> si.ShortSyncDTO:
+    if not SHORT_SYNC_COMPONENTS:
+        return si.ShortSyncDTO([])
+
+    entity_ids = context.get_updated_entities_for(*SHORT_SYNC_COMPONENTS)
+    if sort:
+        entity_ids = sorted(entity_ids)  # type: ignore
+
+    updates = [_create_short_sync(entity_id, context) for entity_id in entity_ids]
+    return si.ShortSyncDTO(updates)
+
+
+def create_long_sync(context: Context, sort=False) -> si.LongSyncDTO:
+    if not LONG_SYNC_COMPONENTS:
+        return si.LongSyncDTO([])
+
+    entity_ids = context.get_updated_entities_for(*LONG_SYNC_COMPONENTS)
+    if sort:
+        entity_ids = sorted(entity_ids)  # type: ignore
+
+    updates = [_create_long_sync(entity_id, context) for entity_id in entity_ids]
+    return si.LongSyncDTO(updates)
+
+
+def _create_short_sync(entity_id: str, context: Context) -> si.ShortEntityData:
     return si.ShortEntityData(**short_sync_data(entity_id, context))
+
+
+def _create_long_sync(entity_id: str, context: Context) -> si.EntityData:
+    return si.EntityData(**long_sync_data(entity_id, context))
 
 
 def short_sync_data(entity_id: str, context: Context) -> Dict:
@@ -17,10 +46,6 @@ def short_sync_data(entity_id: str, context: Context) -> Dict:
         'position': context.get_maybe(entity_id, Position).position,  # type:ignore
         'velocity': context.get_maybe(entity_id, Velocity).velocity,  # type:ignore
     }
-
-
-def create_long_sync(entity_id: str, context: Context) -> si.EntityData:
-    return si.EntityData(**short_sync_data(entity_id, context))
 
 
 def long_sync_data(entity_id: str, context: Context) -> Dict:
