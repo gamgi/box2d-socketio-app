@@ -1,9 +1,10 @@
-from typing import DefaultDict, Tuple, Set, List, Dict, TypeVar, Mapping, Generic, Type, Union
+from typing import DefaultDict, Tuple, Set, List, Dict, TypeVar, Mapping, Generic, Type, Union, overload
 from collections import defaultdict
 from .base_component import Component, NullComponent
 from .exc import UnknownComponentError
 
 T = TypeVar('T', bound=Mapping[str, Mapping[str, Component]])
+U = TypeVar('U', bound=Component)
 
 
 class Context(Generic[T]):
@@ -84,12 +85,20 @@ class Context(Generic[T]):
                 self._updated_entities[component.component_name] -= updated
         return updated
 
-    def singleton(self, component: Type[Component], field: str = None):
-        """Return singleton component dataclass"""
+    @overload
+    def singleton(self, component: Type[Component], field: str):
+        ...
 
-        value = self.component(component.component_name, component)
+    @overload
+    def singleton(self, component: Type[U]) -> U:
+        ...
+
+    def singleton(self, component, field=None):
+        """Return singleton component dataclass"""
+        value = self.get_definitely(component.component_name, component)
+
         if field:
-            return getattr(value, field, None)
+            return getattr(value, field)
         return value
 
     def all(self, *required_components: Type[Component],
@@ -144,7 +153,7 @@ class Context(Generic[T]):
     def get_definitely(self, entity_id: str, component: Type[Component]) -> Union[Component, None]:
         """Return compoent dataclass or None"""
 
-        return self.repository[component.component_name].get(entity_id, None)
+        return self.repository[component.component_name].get(entity_id)
 
     def get_updated(self, entity_id: str, *components: Type[Component],
                     reset=True) -> Tuple[Union[Component, None], ...]:

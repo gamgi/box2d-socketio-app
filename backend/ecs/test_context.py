@@ -181,16 +181,14 @@ class TestContext:
         assert entity_id == SingleFoo.component_name
         assert c.singleton(SingleFoo) == SingleFoo(1)
         assert c.singleton(SingleFoo, 'value3') == 1
-        assert c.singleton(SingleFoo, 'nonexistent') is None
+        with pytest.raises(AttributeError):
+            c.singleton(SingleFoo, 'nonexistent')
 
     def test_get_nonexisten_singleton_component(self, empty_repository):
         c = Context(repository=empty_repository)
         c.new_singleton(SingleFoo(1))
 
-        value = c.singleton(Foo)
-        assert bool(value) is False
-        assert isinstance(value, NullComponent)
-        assert value.component_name == Foo.component_name
+        assert c.singleton(Foo) is None
 
     def test_upsert_marks_entity_updated(self, empty_repository):
         c = Context(repository=empty_repository)
