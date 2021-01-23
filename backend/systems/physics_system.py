@@ -3,11 +3,7 @@ from ecs.base_system import System
 from ecs.context import Context
 from components import Box2DBody, Box2DWorld, Position, Velocity, Input
 from Box2D import b2World, b2EdgeShape, b2Vec2
-
-BOX2D_SETTINGS = {
-    'vel_iters': 6,
-    'pos_iters': 2
-}
+from constants import BOX2D_VEL_ITERS, BOX2D_POS_ITERS
 
 
 class PhysicsSystem(System):
@@ -31,7 +27,7 @@ class PhysicsSystem(System):
             self._mark_entity_updated(entity_id, body, position, velocity)
             self._handle_input(entity_id, input, body)
 
-        world.Step(dt, BOX2D_SETTINGS['vel_iters'], BOX2D_SETTINGS['pos_iters'])
+        world.Step(dt, BOX2D_VEL_ITERS, BOX2D_POS_ITERS)
         world.ClearForces()
 
     def _handle_input(self, entity_id: str, input: Input, body: Box2DBody):
