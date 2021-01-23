@@ -71,6 +71,10 @@ class Server(socketio.Namespace):
         callback = partial(self.sio.enter_room, sid)
         return self.game.create_room(sid, ci.CreateRoomDTO(**data), callback)
 
+    def on_input(self, sid: str, data: Dict):
+        room_id = self.sio.rooms(sid, namespace='/')[-1]
+        return self.game.input(sid, room_id, ci.InputDTO(**data))
+
     def _get_dt(self) -> float:
         if self._last_update:
             return time() - self._last_update

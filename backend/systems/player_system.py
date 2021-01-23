@@ -2,8 +2,10 @@ from typing import List, Dict
 from ecs.base_system import System
 from ecs.context import Context
 from collections import defaultdict
+import client_interfaces as ci
 from components import Box2DBody, Box2DWorld, Position, Velocity
-from components import Player, Match, Team
+from components import Player, Match, Team, Input
+from constants import LEFT, RIGHT, UP
 
 
 class PlayerSystem(System):
@@ -13,6 +15,18 @@ class PlayerSystem(System):
     def on_player_join(self, sid: str):
         self._spawn_player(sid)
         self._assign_team(sid)
+
+    def on_input(self, sid: str, data: ci.InputDTO):
+        move_left = LEFT in data.keys_down
+        move_right = RIGHT in data.keys_down
+
+        input_ = Input(
+            move_left=move_left and not move_right,
+            move_right=move_right and not move_left,
+            jump=UP in data.keys_down
+        )
+
+        self.context.upsert(sid, input_)
 
     def _spawn_player(self, entity_id: str):
         world = self._get_world()

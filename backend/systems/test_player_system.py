@@ -1,7 +1,8 @@
 import pytest
 from unittest.mock import Mock
 from systems.player_system import PlayerSystem
-from components import Match, Team, Player, Box2DWorld
+import client_interfaces as ci
+from components import Match, Team, Player, Input, Box2DWorld
 
 
 @pytest.fixture
@@ -36,3 +37,14 @@ class TestPlayerSystem:
         assert context.component('player2', Team).index == 1
         assert context.component('player3', Team).index == 0
         assert context.component('player4', Team).index == 1
+
+    def test_on_input_sets_input(self, system, context):
+        system.on_player_join('player1')
+
+        system.on_input('player1', ci.InputDTO(
+            keys_down=['ArrowRight'],
+            keys_pressed=None,
+            keys_released=None)
+        )
+        assert context.component('player1', Input).move_right
+        assert context.component('player1', Input).move_left is False

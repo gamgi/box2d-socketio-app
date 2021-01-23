@@ -78,6 +78,18 @@ class Match(Component):
         return cls(state=MatchState.NOT_STARTED, teams=[0, 1])
 
 
+@dataclass
+class Input(Component):
+    component_name = 'input'
+    move_left: bool
+    move_right: bool
+    jump: bool
+
+    @classmethod
+    def Nil(cls):
+        return cls(move_left=False, move_right=False, jump=False)
+
+
 COMPONENTS = list(filter(lambda cls: is_dataclass(cls) and issubclass(cls, Component), locals().values()))
 SHORT_SYNC_COMPONENTS = list(filter(lambda cls: cls.sync == Sync.SHORT, COMPONENTS))
 LONG_SYNC_COMPONENTS = list(filter(lambda cls: cls.sync != Sync.NO_SYNC, COMPONENTS))

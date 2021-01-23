@@ -55,6 +55,9 @@ class Game:
 
         return si.CreateRoomDTO(room=room)
 
+    def input(self, sid: str, room_id: str, data: ci.InputDTO):
+        self.trigger_event(ExternalEvent.INPUT, room_id, sid, data)
+
     def trigger_event(self, event: ExternalEvent, room_id: str, *args, **kwargs):
         method_name = f'on_{event.value}'
         for system in self.systems[room_id]:
