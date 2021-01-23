@@ -98,3 +98,10 @@ class ShortSyncDTO(Interface):
 @dataclass
 class LongSyncDTO(Interface):
     updates: List[EntityData]
+
+
+@dataclass
+class ErrorDTO(Interface):
+    error: bool
+    code: int
+    message: str

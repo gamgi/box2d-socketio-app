@@ -5,6 +5,7 @@ import eventlet
 import socketio
 from functools import partial
 import client_interfaces as ci
+from server.decorators import returns_error_dto
 from game.game import Game
 logging.basicConfig(level=logging.INFO)
 
@@ -37,13 +38,16 @@ class Server(socketio.Namespace):
     def on_disconnect(self, sid):
         pass
 
+    @returns_error_dto
     def on_get_rooms(self, sid: str, data: None):
         return self.game.get_rooms()
 
+    @returns_error_dto
     def on_join_room(self, sid: str, data: Dict):
         callback = partial(self.sio.enter_room, sid)
         return self.game.join_room(sid, ci.JoinRoomDTO(**data), callback)
 
+    @returns_error_dto
     def on_create_room(self, sid: str, data: Dict):
         callback = partial(self.sio.enter_room, sid)
         return self.game.create_room(sid, ci.CreateRoomDTO(**data), callback)
