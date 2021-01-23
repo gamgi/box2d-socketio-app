@@ -3,7 +3,14 @@ from abc import abstractmethod
 from enum import Enum
 from .context import Context
 
-ExternalEvent = Enum('ExternalEvent', ['GAME_INIT', 'INPUT', 'UPDATE', 'UPDATE_FRAME', 'PLAYER_JOIN', 'PLAYER_LEAVE'])
+
+class ExternalEvent(Enum):
+    GAME_INIT = 'game_init'
+    INPUT = 'input'
+    UPDATE = 'update'
+    UPDATE_FRAME = 'update_frame'
+    PLAYER_JOIN = 'player_join'
+    PLAYER_LEAVE = 'player_leave'
 
 
 class System(Protocol):
