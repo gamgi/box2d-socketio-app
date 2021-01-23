@@ -4,6 +4,7 @@ from ecs.context import Context
 import client_interfaces as ci
 import server_interfaces as si
 from repository import repository_factory
+import serializer
 from .exc import GameError
 
 
@@ -61,6 +62,20 @@ class Game:
                 getattr(system, method_name)(*args, **kwargs)
             except NotImplementedError:
                 pass
+
+    def update_short(self, dt: float, callback_emit: Callable):
+        for room_id, context in self.contexts.items():
+            self.trigger_event(ExternalEvent.UPDATE_FRAME, room_id, dt)
+
+            updates = serializer.create_short_sync(context)
+            callback_emit(updates, room_id)
+
+    def update_long(self, callback_emit: Callable):
+        for room_id, context in self.contexts.items():
+            self.trigger_event(ExternalEvent.UPDATE, room_id)
+
+            updates = serializer.create_long_sync(context)
+            callback_emit(updates, room_id)
 
     def _get_players(self) -> Set[str]:
         return set(player_id for room in self.rooms.values() for player_id in room.players)
