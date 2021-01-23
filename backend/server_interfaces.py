@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 from dataclasses import dataclass, field
 from py_ts_interfaces import Interface
 from math import pi
@@ -73,3 +73,28 @@ class PolygonShapeData(Interface):
     @classmethod
     def from_b2PolygonShape(cls, shape):
         return cls(x=0, y=0, vertices=shape.vertices)
+
+
+@dataclass
+class ShortEntityData(Interface):
+    id: str
+    position: Optional[List[float]] = None
+    velocity: Optional[List[float]] = None
+
+
+@dataclass
+class ShortSyncDTO(Interface):
+    updates: List[ShortEntityData]
+
+
+@dataclass
+class EntityData(Interface):
+    id: str
+    position: Optional[List[float]] = None
+    velocity: Optional[List[float]] = None
+    shape: Optional[Union[PolygonShapeData, ArcShapeData, RectShapeData]] = None
+
+
+@dataclass
+class LongSyncDTO(Interface):
+    updates: List[EntityData]
