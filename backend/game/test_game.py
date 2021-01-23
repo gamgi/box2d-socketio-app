@@ -112,7 +112,7 @@ class TestGame:
         game.contexts['room0'].upsert('0', Position.at([0, 0]))
         game.update_short(1, callback)
         updates = callback.call_args_list[0][0][0].updates
-        assert updates == [si.ShortEntityData(id='0', position=(0.0, 0.0), velocity=None)]
+        assert updates == [si.ShortEntityData(id='0', position=[0.0, 0.0], velocity=None)]
 
     def test_update_short_does_not_reset_other_components_updates(self):
         body = Mock(awake=True, position=(1, 2), fixtures=[])

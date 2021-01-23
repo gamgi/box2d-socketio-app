@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 from ecs.base_system import System
 from ecs.context import Context
 from components import Box2DBody, Box2DWorld, Position, Velocity
@@ -23,11 +23,11 @@ class PhysicsSystem(System):
         self.do_update(entity_data, world, dt)
         self.mark_entities_updated(entity_data)
 
-    def do_update(self, entity_data: List[Tuple], world: b2World, dt: float) -> None:
+    def do_update(self, entity_data: Dict[str, Tuple], world: b2World, dt: float) -> None:
         world.Step(dt, BOX2D_SETTINGS['vel_iters'], BOX2D_SETTINGS['pos_iters'])
         world.ClearForces()
 
-    def mark_entities_updated(self, entity_data: List[Tuple]):
+    def mark_entities_updated(self, entity_data: Dict[str, Tuple]):
         for entity_id, data in entity_data.items():
             body, position, velocity = data
             if not body.body.awake:

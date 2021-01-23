@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import Mock
-from player_system import PlayerSystem
+from systems.player_system import PlayerSystem
 from components import Match, Team, Player, Box2DWorld
 
 

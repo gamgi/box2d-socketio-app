@@ -13,12 +13,12 @@ Repository = TypedDict('Repository', {
 def repository_factory():
     columns = [component.component_name for component in COMPONENTS]
     unique_columns = _validate_columns(columns)
-    return Repository({column: dict() for column in unique_columns})
+    return Repository({column: dict() for column in unique_columns})  # type: ignore
 
 
 def _validate_columns(columns):
     unique = set()
-    duplicates = set(x for x in columns if x in unique or unique.add(x))
+    duplicates = set(x for x in columns if x in unique or unique.add(x))  # type: ignore
     if duplicates:
         raise RuntimeError(f'duplicate component fields: {",".join(duplicates)}')
     return unique

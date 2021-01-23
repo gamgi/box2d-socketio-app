@@ -1,4 +1,4 @@
-from typing import Union, Dict, Callable
+from typing import Union, Dict, Callable, Optional
 from time import time
 import logging
 import threading
@@ -21,7 +21,7 @@ class Server(socketio.Namespace):
         super().__init__(namespace=namespace)
         self.game = game
         self.sio = sio
-        self._last_update = None
+        self._last_update: Optional[float] = None
 
         self.callback_short: Callable = partial(self.sio.emit, 'short_sync')
         self.callback_long: Callable = partial(self.sio.emit, 'long_sync')

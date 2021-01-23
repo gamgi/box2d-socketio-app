@@ -48,11 +48,11 @@ class PlayerSystem(System):
         player_count: Dict[int, int] = defaultdict(int, {team: 0 for team in teams})
         for entity_id in entities:
             team = self.context.component(entity_id, Team)
-            player_count[team.index] += 1
+            player_count[team.index] += 1  # type: ignore
         return player_count
 
     def _get_world(self):
         return self.context.singleton(Box2DWorld, field='world')
 
     def _get_teams(self) -> List[int]:
-        return self.context.singleton(Match, field='teams')
+        return self.context.singleton(Match, field='teams')  # type: ignore

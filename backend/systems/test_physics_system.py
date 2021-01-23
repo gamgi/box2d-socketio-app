@@ -1,5 +1,5 @@
 import pytest
-from physics_system import PhysicsSystem
+from systems.physics_system import PhysicsSystem
 from unittest.mock import patch, Mock
 from components import Box2DWorld, Box2DBody, Position, Velocity
 
@@ -21,7 +21,7 @@ class TestPhysicsSystem:
 
     def test_on_update_frame_calls_step(self, system):
         world = Mock(bodies_gen=[])
-        with patch('physics_system.b2World', return_value=world):
+        with patch('systems.physics_system.b2World', return_value=world):
             system.on_game_init(None)
             system.on_update_frame(1)
         world.Step.assert_called_once()
