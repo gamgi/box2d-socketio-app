@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "outDir": "./build/",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictFunctionTypes": false,
+    "strictBindCallApply": true,
+    "module": "es2015",
+    "lib": ["dom", "es2019"],
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "target": "es2017",
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "types": ["node", "pixi.js"],
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "build"]
+}
