@@ -126,7 +126,8 @@ class TestContext:
         entity_id = c.new(Foo(1))
 
         assert c.get_definitely(entity_id, Foo) == Foo(1)
-        assert c.get_definitely(entity_id, Bar) is None
+        with pytest.raises(KeyError):
+            assert c.get_definitely(entity_id, Bar)
 
     def test_all(self, empty_repository):
         c = Context(repository=empty_repository)
@@ -188,7 +189,8 @@ class TestContext:
         c = Context(repository=empty_repository)
         c.new_singleton(SingleFoo(1))
 
-        assert c.singleton(Foo) is None
+        with pytest.raises(KeyError):
+            c.singleton(Foo)
 
     def test_upsert_marks_entity_updated(self, empty_repository):
         c = Context(repository=empty_repository)

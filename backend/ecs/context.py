@@ -150,10 +150,10 @@ class Context(Generic[T]):
             NullComponent(component.component_name)
         )
 
-    def get_definitely(self, entity_id: str, component: Type[Component]) -> Union[Component, None]:
-        """Return compoent dataclass or None"""
+    def get_definitely(self, entity_id: str, component: Type[U]) -> U:
+        """Return compoent dataclass. Raises if not found."""
 
-        return self.repository[component.component_name].get(entity_id)
+        return self.repository[component.component_name][entity_id]  # type:ignore
 
     def get_updated(self, entity_id: str, *components: Type[Component],
                     reset=True) -> Tuple[Union[Component, None], ...]:
