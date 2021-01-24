@@ -1,6 +1,7 @@
 {
   "env": {
-    "browser": true
+    "browser": true,
+    "jest/globals": true
   },
   "extends": [
     "plugin:@typescript-eslint/recommended",
@@ -102,5 +103,19 @@
     "valid-typeof": "off"
   },
   "overrides": [
+    {
+      "files": ["src/**/*.spec.tsx", "src/**/*.test.tsx", "src/**/*.test.ts", "src/**/__mocks__/*.ts"],
+      "plugins": ["jest"],
+      "rules": {
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/unbound-method": "off",
+        "no-underscore-dangle": 0,
+        "@typescript-eslint/no-underscore-dangle": 0,
+        "@typescript-eslint/ban-ts-comment": 0,
+        "@typescript-eslint/no-unsafe-member-access": 0,
+        "@typescript-eslint/no-unsafe-assignment": 0
+      }
+    }
   ]
 }

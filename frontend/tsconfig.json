@@ -13,7 +13,7 @@
     "target": "es2017",
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "types": ["node", "pixi.js"],
+    "types": ["node", "pixi.js", "jest"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "build"]

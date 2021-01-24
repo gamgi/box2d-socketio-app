@@ -6,9 +6,13 @@
     "build": "webpack --config webpack.config.js ",
     "start": "webpack-dev-server --config webpack.config.dev.js",
     "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --fix",
-    "prettier": "prettier --check \"*.json\" --ignore-path package.json"
+    "prettier": "prettier --check \"*.json\" --ignore-path package.json",
+    "format": "yarn run prettier --write",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.19",
     "@types/node": "^14.10.1",
     "@types/socket.io-client": "^1.4.34",
     "@typescript-eslint/eslint-plugin": "^4.1.0",
@@ -20,7 +24,10 @@
     "eslint-plugin-prettier": "^3.1.4",
     "file-loader": "^6.1.0",
     "html-webpack-plugin": "^4.4.1",
+    "jest": "^26.6.3",
+    "jest-canvas-mock": "^2.3.0",
     "prettier": "^2.1.1",
+    "ts-jest": "^26.4.4",
     "ts-loader": "^8.0.3",
     "typescript": "^4.0.2",
     "webpack": "^4.44.1",
@@ -31,5 +38,14 @@
   "dependencies": {
     "pixi.js": "^5.3.3",
     "socket.io-client": "^3.0.4"
+  },
+  "jest": {
+    "roots": [
+      "src/"
+    ],
+    "preset": "ts-jest",
+    "setupFiles": [
+      "jest-canvas-mock"
+    ]
   }
 }
