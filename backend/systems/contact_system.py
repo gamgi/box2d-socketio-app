@@ -1,11 +1,14 @@
 from typing import Callable, Tuple
 from ecs.base_system import System
 from ecs.context import Context
+from systems.physics_system import PhysicsSystem
 from components import Box2DBody, Box2DWorld, Collidable
 from Box2D import b2ContactListener, b2Contact
 
 
 class ContactSystem(System):
+    requires = [PhysicsSystem]
+
     def __init__(self, context: Context):
         self.context = context
 

@@ -3,6 +3,7 @@ from ecs.base_system import System, ExternalEvent
 from ecs.context import Context
 import client_interfaces as ci
 import server_interfaces as si
+from systems.dependency_graph import resolve_dependency_order
 from repository import repository_factory
 import serializer
 from .exc import GameError
@@ -13,7 +14,7 @@ class Game:
         self.systems: Dict[str, List[System]] = {}
         self.contexts: Dict[str, Context] = {}
         self.rooms: Dict[str, si.RoomMeta] = {}
-        self._systems_classes = systems_classes
+        self._systems_classes = resolve_dependency_order(systems_classes)
         self._repository_factory = repository_factory
 
     def join_room(self, sid: str, data: ci.JoinRoomDTO, callback_enter_room: Callable) -> si.JoinRoomDTO:
