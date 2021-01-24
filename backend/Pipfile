@@ -25,12 +25,12 @@ python_version = "3.8"
 [scripts]
 "generate:types" = "bash -c \"./bin/generate_types.sh\""
 "check" = "bash -c \"pipenv run lint && pipenv run flake;  pipenv run mypy\""
-"dev" = "pipenv run watchgod app.main"
+"dev" = "pipenv run watchgod main.main"
 "flake" = "flake8 --count"
 "watch" = "ptw -- --disable-pytest-warnings -vv"
 "lint" = "autopep8 --in-place --aggressive --aggressive --recursive --max-line-length 120 ./"
 "mypy" = "mypy --check-untyped-defs ./"
-"start" = "python app.py"
+"start" = "python main.py"
 
 [pipenv]
 allow_prereleases = true
