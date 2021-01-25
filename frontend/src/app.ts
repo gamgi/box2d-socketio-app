@@ -1,12 +1,14 @@
-import { Application } from 'pixi.js';
-import { ci, Client } from './lib';
+import { Application, IResourceDictionary } from 'pixi.js';
+import { ci, Client, loadResources } from './lib';
 import { Keyboard, Key, KeyboardContext } from './lib/keyboard';
 import { Game } from './game';
+import { RESOURCES } from './constants';
 
 export class App {
   private client: Client;
   private keyboard: Keyboard;
   private game: Game;
+  private resources: IResourceDictionary = {};
 
   constructor(app: Application, client: Client, keyboard: Keyboard, game: Game) {
     this.client = client;
@@ -21,7 +23,17 @@ export class App {
 
   private async initClient(reconnect = false): Promise<void> {
     const timeout = reconnect ? 15000 : 10000;
+    await this.initResources();
     await this.client.connect(timeout);
+  }
+
+  private async initResources(): Promise<void> {
+    try {
+      this.resources = await loadResources(RESOURCES);
+      this.game.initResources(this.resources);
+    } catch (err) {
+      throw err;
+    }
   }
 
   private initKeyboard(): void {
