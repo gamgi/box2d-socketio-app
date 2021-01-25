@@ -1,9 +1,11 @@
 import { Application, Container, IResourceDictionary } from 'pixi.js';
-import { Client } from './lib';
+import { EntityManager } from './entityManager';
+import { si, Client } from './lib';
 
 export class Game {
   public stage: Container = new Container();
   private resources: IResourceDictionary = {};
+  private entityManager = new EntityManager();
 
   constructor(private pixi: Application, private client: Client) {
     pixi.stage.addChild(this.stage);
@@ -14,6 +16,17 @@ export class Game {
     this.resources = resources;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private initClient(): void {}
+  private initClient(): void {
+    this.client.eventEmitter.on('long_sync', (data: si.LongSyncDTO) => {
+      for (const update of data.updates) {
+        this.entityManager.updateEntity(update.id, update);
+      }
+    });
+
+    this.client.eventEmitter.on('short_sync', (data: si.ShortSyncDTO) => {
+      for (const update of data.updates) {
+        this.entityManager.updateEntityShort(update.id, update);
+      }
+    });
+  }
 }
