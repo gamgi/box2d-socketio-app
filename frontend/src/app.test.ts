@@ -18,4 +18,17 @@ describe('App', () => {
     expect(keyboard.eventEmitter.on).toHaveBeenCalled();
     expect(client.connect).toHaveBeenCalled();
   });
+
+  it('sends keyboard events to server', async () => {
+    const client = new Client();
+    const keyboard = new Keyboard();
+    const game = { initResources: jest.fn() } as any;
+    const app = new App(new Application(), client, keyboard, game);
+    await app.init();
+
+    keyboard.eventEmitter.emit('pressed', Key.ArrowRight, { keysDown: [] });
+
+    // eslint-disable-next-line camelcase
+    expect(client.sendInput).toHaveBeenCalledWith({ keys_down: [], keys_pressed: ['ArrowRight'], keys_released: null });
+  });
 });

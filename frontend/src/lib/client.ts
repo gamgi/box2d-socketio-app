@@ -48,6 +48,10 @@ export class Client {
     });
   }
 
+  public sendInput(data: ci.InputDTO): void {
+    this.socket.emit('input', data);
+  }
+
   public get connected(): boolean {
     return this.socket.connected;
   }
