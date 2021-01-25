@@ -18,7 +18,8 @@ export class EntityManager {
   public updateEntity(id: string, update: Partial<si.EntityData>): void {
     let entity: Entity;
     if (id in this.entities) {
-      entity = Object.assign(this.entities[id], update);
+      entity = this.entities[id];
+      Object.assign(entity.server, update);
     } else {
       entity = this.entities[id] = this.newEntity(update);
     }
