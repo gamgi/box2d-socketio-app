@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
+      <script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
+    <% } %>
+  </body>
+</html>
