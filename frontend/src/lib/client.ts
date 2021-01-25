@@ -1,5 +1,6 @@
 import { io, Socket, SocketOptions, ManagerOptions } from 'socket.io-client';
 import { utils } from 'pixi.js';
+import { ci, si } from './index';
 import { ConnectionError } from './clientErrors';
 
 type ClientOptions = {
@@ -50,6 +51,10 @@ export class Client {
 
   public sendInput(data: ci.InputDTO): void {
     this.socket.emit('input', data);
+  }
+
+  public async createRoom(data: ci.CreateRoomDTO): Promise<si.CreateRoomDTO> {
+    return emitAsPromise(this.socket, 'create_room', data);
   }
 
   public get connected(): boolean {

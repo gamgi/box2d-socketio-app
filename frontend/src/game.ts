@@ -16,6 +16,10 @@ export class Game {
     this.resources = resources;
   }
 
+  public async createRoom(name: string, isPrivate: boolean): Promise<void> {
+    await this.client.createRoom({ name, private: isPrivate });
+  }
+
   private initClient(): void {
     this.client.eventEmitter.on('long_sync', (data: si.LongSyncDTO) => {
       for (const update of data.updates) {

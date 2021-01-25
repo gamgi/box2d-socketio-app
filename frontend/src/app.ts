@@ -46,6 +46,7 @@ export class App {
     try {
       this.ui.showMessage(message);
       await this.client.connect(timeout);
+      await this.game.createRoom('my room', false);
       this.ui.clearMessage();
     } catch (err) {
       if (err instanceof ClientError) {
