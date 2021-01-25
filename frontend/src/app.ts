@@ -1,14 +1,17 @@
 import { Application } from 'pixi.js';
 import { ci, Client } from './lib';
 import { Keyboard, Key, KeyboardContext } from './lib/keyboard';
+import { Game } from './game';
 
 export class App {
   private client: Client;
   private keyboard: Keyboard;
+  private game: Game;
 
-  constructor(app: Application, client: Client, keyboard: Keyboard) {
+  constructor(app: Application, client: Client, keyboard: Keyboard, game: Game) {
     this.client = client;
     this.keyboard = keyboard;
+    this.game = game;
   }
 
   public async init(): Promise<void> {

@@ -2,11 +2,13 @@ import { Application } from 'pixi.js';
 import { Client, Keyboard } from './lib';
 import { HOST } from './constants';
 import { App } from './app';
+import { Game } from './game';
 
 function init(pixi: Application) {
   const client = new Client({ url: HOST });
   const keyboard = new Keyboard();
-  const app = new App(pixi, client, keyboard);
+  const game = new Game(pixi, client);
+  const app = new App(pixi, client, keyboard, game);
 
   void app.init();
 }
