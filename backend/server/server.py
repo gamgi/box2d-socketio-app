@@ -30,9 +30,9 @@ class Server(socketio.Namespace):
         frame = 0
         while not shutdown_flag.is_set():
             self.tick(frame == 0)
+            self._last_update = time()
             self.sio.sleep(1 / ticks_per_second)
             frame = (frame + 1) % ticks_per_second
-            self._last_update = time()
 
     def tick(self, long: bool = True, sort: bool = False):
         if long:

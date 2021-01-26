@@ -32,7 +32,7 @@ export class Client {
       this.socket.close();
     });
 
-    this.bindSocketEventsToEmitter(['update_entities', 'fast_update_entities']);
+    this.bindSocketEventsToEmitter(['short_sync', 'long_sync']);
   }
 
   public async connect(timeout = 5000): Promise<void> {
