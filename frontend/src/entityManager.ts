@@ -5,7 +5,7 @@ import { isPolygonShape } from './componentUtils';
 
 type ServerEntityData = Partial<si.EntityData & si.ShortEntityData>;
 type LocalEntityData = {
-  sprites: Sprite[]; // | null;
+  sprites: Sprite[];
 };
 type Entity = {
   server: ServerEntityData;
@@ -30,12 +30,12 @@ export class EntityManager {
       entity = this.entities[id] = this.newEntity(update);
     }
 
-    if (update?.position) {
-      this.updateEntityPosition(entity);
-    }
-
     if (update?.shape) {
       this.updateEntityShape(entity, update.shape);
+    }
+
+    if (update?.position) {
+      this.updateEntityPosition(entity, update.position);
     }
   }
 
@@ -57,5 +57,12 @@ export class EntityManager {
     }
   }
 
-  private updateEntityPosition(entity: Entity) {}
+  private updateEntityPosition(entity: Entity, position: si.EntityData['position']) {
+    if (entity.local.sprites) {
+      entity.local.sprites.forEach((sprite) => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        sprite.position.set(position![0], position![1]);
+      });
+    }
+  }
 }
