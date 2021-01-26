@@ -88,11 +88,13 @@ class TestServerE2E:
                         id='player1',
                         position=b2Vec2(0, 0),
                         velocity=b2Vec2(0, 0),
-                        shape=ANY),
+                        shape=ANY,
+                        color=ANY),
                     si.EntityData(
                         id='player2',
                         position=b2Vec2(0, 0),
                         velocity=b2Vec2(0, 0),
-                        shape=ANY)
+                        shape=ANY,
+                        color=ANY)
                 ]), 'room0')
             ], any_order=True)

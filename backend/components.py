@@ -1,5 +1,5 @@
-from typing import Sequence, List
-from dataclasses import dataclass, is_dataclass
+from typing import Sequence, List, Set
+from dataclasses import dataclass, is_dataclass, field
 from Box2D import b2World, b2Body, b2Vec2
 from constants import MatchState
 from ecs.base_component import Component, Sync
@@ -53,6 +53,12 @@ class Box2DBody(Component):
 
     def __register_entity__(self, entity_id: str):
         self.body.userData = entity_id
+
+
+@dataclass
+class Collidable(Component):
+    component_name = 'collidable'
+    collides_with: Set[str] = field(default_factory=set)
 
 
 @dataclass
