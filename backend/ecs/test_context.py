@@ -203,6 +203,13 @@ class TestContext:
 
         assert c.get_all_updated_entities() == set('1')
 
+    def test_mark_entity_updated_does_not_mark_ignored(self, empty_repository):
+        c = Context(repository=empty_repository)
+        c.ignore_entity_updates('1')
+        c.upsert('1', Foo(1))
+
+        assert c.get_all_updated_entities() == set()
+
     def test_upsert_calls_register_entity(self, empty_repository):
         c = Context(repository=empty_repository)
         callback = MagicMock()

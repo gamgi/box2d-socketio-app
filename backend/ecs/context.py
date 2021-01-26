@@ -12,6 +12,7 @@ class Context(Generic[T]):
         self.entities: DefaultDict[str, Set[str]] = defaultdict(set)
         self.repository = repository
         self._updated_entities: DefaultDict[str, Set[str]] = defaultdict(set)
+        self._ignore_updated_entities: Set[str] = set()
         self._counter = 0
 
         self._init_entities(repository)
@@ -175,9 +176,16 @@ class Context(Generic[T]):
 
     def mark_entity_updated(self, entity_id: str, *components: Union[Type[Component], Component]):
         """Marks entity updated to be retrieved for get_updated_nnn"""
+        if entity_id in self._ignore_updated_entities:
+            return
 
         for component in components:
             self._updated_entities[component.component_name].add(entity_id)
+
+    def ignore_entity_updates(self, entity_id: str):
+        """Marks entity to be ignored in get_updated and get_updated_entities_for"""
+
+        self._ignore_updated_entities.add(entity_id)
 
     def _new_id(self) -> str:
         entity_id = str(self._counter)

@@ -57,6 +57,7 @@ class PhysicsSystem(System):
         floor_body = world.CreateStaticBody(
             shapes=b2EdgeShape(vertices=[(-20, -5.5), (20, -5.5)]),
         )
+        self.context.ignore_entity_updates('floor')
         self.context.upsert('floor', Box2DBody(floor_body))
 
     def _get_world(self):
