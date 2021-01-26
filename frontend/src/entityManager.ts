@@ -1,7 +1,11 @@
+import { Application, Container, Sprite, Graphics } from 'pixi.js';
 import { si } from './lib';
+import { renderGraphicToSprite } from './entityUtils';
+import { isPolygonShape } from './componentUtils';
 
 type ServerEntityData = Partial<si.EntityData & si.ShortEntityData>;
 type LocalEntityData = {
+  sprites: Sprite[]; // | null;
 };
 type Entity = {
   server: ServerEntityData;
@@ -10,6 +14,8 @@ type Entity = {
 
 export class EntityManager {
   public entities: Record<string, Entity> = {};
+
+  constructor(private pixi: Application, private stage: Container) {}
 
   public updateEntityShort(id: string, update: Partial<si.ShortEntityData>): void {
     this.updateEntity(id, update);
@@ -27,12 +33,29 @@ export class EntityManager {
     if (update?.position) {
       this.updateEntityPosition(entity);
     }
+
+    if (update?.shape) {
+      this.updateEntityShape(entity, update.shape);
+    }
   }
 
   private newEntity(update: Partial<si.EntityData>): Entity {
-    return { server: update, local: { sprites: null } };
+    return { server: update, local: { sprites: [] } };
   }
 
-  private updateEntityPosition(entity: Entity) {
+  private updateEntityShape(entity: Entity, shape: si.EntityData['shape']) {
+    if (isPolygonShape(shape)) {
+      const graphic = new Graphics()
+        .beginFill(0xffffff)
+        .drawPolygon(shape.vertices.flat().map((v) => v * 100))
+        .endFill();
+      const sprite = renderGraphicToSprite(graphic, this.pixi);
+
+      entity.local.sprites = [sprite];
+      this.stage.addChild(sprite);
+      graphic.destroy();
+    }
   }
+
+  private updateEntityPosition(entity: Entity) {}
 }
