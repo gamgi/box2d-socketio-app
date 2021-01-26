@@ -1,4 +1,5 @@
 import pytest
+from Box2D import b2CircleShape
 from systems.physics_system import PhysicsSystem
 from unittest.mock import patch, Mock
 from components import Box2DWorld, Box2DBody, Position, Velocity
@@ -46,3 +47,18 @@ class TestPhysicsSystem:
         updated_entities = context.get_all_updated_entities()
         assert '0' in updated_entities
         assert '1' not in updated_entities
+
+    def test_update_frame_moves_things(self, system, context):
+        system.on_game_init(None)
+        world = system._get_world()
+        body = world.CreateDynamicBody(shapes=b2CircleShape(pos=(3, 4), radius=5))
+        context.upsert('0',
+                       Box2DBody(body),
+                       Position.from_body(body),
+                       Velocity.from_body(body)
+                       )
+
+        system.on_update_frame(1.0)
+
+        assert context.component('0', Box2DBody).body.position == (0, -2)
+        assert context.component('0', Position).position == (0, -2)
