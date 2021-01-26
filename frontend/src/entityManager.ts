@@ -45,10 +45,7 @@ export class EntityManager {
 
   private updateEntityShape(entity: Entity, shape: si.EntityData['shape'], color: number) {
     if (isPolygonShape(shape)) {
-      const graphic = new Graphics()
-        .beginFill(color)
-        .drawPolygon(shape.vertices.flat().map((v) => v * 100))
-        .endFill();
+      const graphic = new Graphics().beginFill(color).drawPolygon(shape.vertices.flat()).endFill();
       const sprite = renderGraphicToSprite(graphic, this.pixi);
 
       entity.local.sprites = [sprite];
