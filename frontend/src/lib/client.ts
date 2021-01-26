@@ -7,18 +7,6 @@ type ClientOptions = {
   url: string;
 } & Partial<SocketOptions & ManagerOptions>;
 
-function emitAsPromise<T>(socket: Socket, event: string, data: Record<string, any>): Promise<T> {
-  return new Promise((resolve, reject) => {
-    const parseResponse = (response: T) => {
-      if (!response) {
-        reject(response as any);
-      }
-      resolve(response);
-    };
-    socket.emit(event, data, parseResponse);
-  });
-}
-
 export class Client {
   private socket: Socket;
   public eventEmitter: utils.EventEmitter = new utils.EventEmitter();
@@ -54,7 +42,11 @@ export class Client {
   }
 
   public async createRoom(data: ci.CreateRoomDTO): Promise<si.CreateRoomDTO> {
-    return emitAsPromise(this.socket, 'create_room', data);
+    const response = await emitAsPromise<si.CreateRoomDTO>(this.socket, 'create_room', data);
+    if (isError(response)) {
+      throw new Error(response.message);
+    }
+    return response;
   }
 
   public get connected(): boolean {
@@ -68,4 +60,27 @@ export class Client {
       this.socket.on(event, (data: any) => this.eventEmitter.emit(event, data));
     }
   }
+}
+
+function isError(response: Record<string, any> | si.ErrorDTO): response is si.ErrorDTO {
+  return response.error === true;
+}
+
+function emitAsPromise<T extends Record<string, any>>(
+  socket: Socket,
+  event: string,
+  data: Record<string, any>,
+): Promise<T | si.ErrorDTO> {
+  return new Promise((resolve, reject) => {
+    const parseResponse = (response: T | null) => {
+      if (!response) {
+        reject({ error: true, code: 500, message: 'No response from server' });
+      } else if (isError(response)) {
+        reject(response);
+      } else {
+        resolve(response);
+      }
+    };
+    socket.emit(event, data, parseResponse);
+  });
 }
