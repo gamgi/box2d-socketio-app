@@ -85,6 +85,12 @@ class TestServerE2E:
             [
                 call('long_sync', si.LongSyncDTO(updates=[
                     si.EntityData(
+                        id='floor',
+                        position=None,
+                        velocity=None,
+                        shape=None,
+                        color=None),
+                    si.EntityData(
                         id='player1',
                         position=b2Vec2(0, 0),
                         velocity=b2Vec2(0, 0),
@@ -95,6 +101,6 @@ class TestServerE2E:
                         position=b2Vec2(0, 0),
                         velocity=b2Vec2(0, 0),
                         shape=ANY,
-                        color=ANY)
+                        color=ANY),
                 ]), 'room0')
             ], any_order=True)

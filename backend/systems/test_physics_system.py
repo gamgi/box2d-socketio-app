@@ -1,7 +1,7 @@
 import pytest
 from Box2D import b2CircleShape
 from systems.physics_system import PhysicsSystem
-from unittest.mock import patch, Mock
+from unittest.mock import patch, Mock, call
 from components import Box2DWorld, Box2DBody, Position, Velocity
 
 
@@ -25,7 +25,10 @@ class TestPhysicsSystem:
         with patch('systems.physics_system.b2World', return_value=world):
             system.on_game_init(None)
             system.on_update_frame(1)
-        world.Step.assert_called_once()
+        world.Step.assert_has_calls([
+            call(0, 0, 0),  # flush contactlisteners
+            call(1, 6, 2),  # actual update
+        ])
 
     def test_on_update_frame_marks_all_awake_entities_updated(self, system, context):
         context.upsert('0',

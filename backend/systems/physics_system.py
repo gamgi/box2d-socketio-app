@@ -3,7 +3,7 @@ from ecs.base_system import System
 from ecs.context import Context
 from components import Box2DBody, Box2DWorld, Position, Velocity, Input
 from Box2D import b2World, b2EdgeShape, b2Vec2
-from constants import BOX2D_VEL_ITERS, BOX2D_POS_ITERS
+from constants import BOX2D_VEL_ITERS, BOX2D_POS_ITERS, BodyType
 
 
 class PhysicsSystem(System):
@@ -22,6 +22,8 @@ class PhysicsSystem(System):
             self._mark_entity_updated(entity_id, body, position, velocity)
 
     def do_update(self, entity_data: Dict[str, Tuple], world: b2World, dt: float) -> None:
+        # flush contactlisteners
+        world.Step(0, 0, 0)
         for entity_id, data in entity_data.items():
             body, position, velocity, input = data
             self._mark_entity_updated(entity_id, body, position, velocity)
@@ -37,7 +39,7 @@ class PhysicsSystem(System):
             body.body.ApplyForceToCenter(b2Vec2(-50, 0), True)
 
     def _mark_entity_updated(self, entity_id: str, body: Box2DBody, position: Position, velocity: Velocity):
-        if not body.body.awake:
+        if not body.body.awake or body.body.type == BodyType.STATIC:
             return
 
         if position:
@@ -49,11 +51,10 @@ class PhysicsSystem(System):
         world = b2World(gravity=(0, -10), doSleep=True)
         self.context.new_singleton(Box2DWorld(world))
 
-        # ground
-        world.CreateStaticBody(
-            shapes=b2EdgeShape(vertices=[(-20, -4), (20, -4)]),
-            userData='floor'
+        floor_body = world.CreateStaticBody(
+            shapes=b2EdgeShape(vertices=[(-20, -5.5), (20, -5.5)]),
         )
+        self.context.upsert('floor', Box2DBody(floor_body))
 
     def _get_world(self):
         return self.context.singleton(Box2DWorld, field='world')
