@@ -56,7 +56,8 @@ class TestSerializerLong:
             'id': '0',
             'position': b2Vec2(0, 0),
             'velocity': b2Vec2(0, 0),
-            'shape': None
+            'shape': None,
+            'color': None
         }
 
     def test_long_sync_data_serializes_shape(self, context):

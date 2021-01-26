@@ -37,7 +37,7 @@ class PlayerSystem(System):
 
         position = Position.from_body(player_body)
         velocity = Velocity.from_body(player_body)
-        player = Player(color='red')
+        player = Player(color=int('0xff0000', 16))
 
         self.context.upsert(
             entity_id,

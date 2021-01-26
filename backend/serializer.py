@@ -2,7 +2,7 @@ from typing import Union, Dict, cast
 from ecs.context import Context
 import server_interfaces as si
 from Box2D import b2Body, b2Shape, b2CircleShape, b2PolygonShape
-from components import Box2DBody, Position, Velocity
+from components import Box2DBody, Position, Velocity, Player
 from components import SHORT_SYNC_COMPONENTS, LONG_SYNC_COMPONENTS
 
 Shape = Union[si.RectShapeData, si.ArcShapeData]
@@ -43,15 +43,16 @@ def _create_long_sync(entity_id: str, context: Context) -> si.EntityData:
 def short_sync_data(entity_id: str, context: Context) -> Dict:
     return {
         'id': entity_id,
-        'position': context.get_maybe(entity_id, Position).position,  # type:ignore
-        'velocity': context.get_maybe(entity_id, Velocity).velocity,  # type:ignore
+        'position': context.get_maybe(entity_id, Position).position,  # type: ignore
+        'velocity': context.get_maybe(entity_id, Velocity).velocity,  # type: ignore
     }
 
 
 def long_sync_data(entity_id: str, context: Context) -> Dict:
     return {
         **short_sync_data(entity_id, context),
-        'shape': get_body_shape(context.get_maybe(entity_id, Box2DBody).body)  # type:ignore
+        'shape': get_body_shape(context.get_maybe(entity_id, Box2DBody).body),  # type: ignore
+        'color': context.get_maybe(entity_id, Player).color,  # type: ignore
     }
 
 

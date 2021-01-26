@@ -62,6 +62,7 @@ export interface EntityData {
   position: Array<number> | null;
   velocity: Array<number> | null;
   shape: PolygonShapeData | ArcShapeData | RectShapeData | null;
+  color: number | null;
 }
 
 export interface ShortSyncDTO {

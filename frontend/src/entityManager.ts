@@ -31,7 +31,7 @@ export class EntityManager {
     }
 
     if (update?.shape) {
-      this.updateEntityShape(entity, update.shape);
+      this.updateEntityShape(entity, update.shape, update?.color ?? 0xffffff);
     }
 
     if (update?.position) {
@@ -43,10 +43,10 @@ export class EntityManager {
     return { server: update, local: { sprites: [] } };
   }
 
-  private updateEntityShape(entity: Entity, shape: si.EntityData['shape']) {
+  private updateEntityShape(entity: Entity, shape: si.EntityData['shape'], color: number) {
     if (isPolygonShape(shape)) {
       const graphic = new Graphics()
-        .beginFill(0xffffff)
+        .beginFill(color)
         .drawPolygon(shape.vertices.flat().map((v) => v * 100))
         .endFill();
       const sprite = renderGraphicToSprite(graphic, this.pixi);

@@ -58,7 +58,7 @@ class Box2DBody(Component):
 @dataclass
 class Player(Component):
     component_name = 'player'
-    color: str
+    color: int
 
 
 @dataclass

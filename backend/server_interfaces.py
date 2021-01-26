@@ -88,6 +88,7 @@ class EntityData(Interface):
     position: Optional[List[float]] = None
     velocity: Optional[List[float]] = None
     shape: Optional[Union[PolygonShapeData, ArcShapeData, RectShapeData]] = None
+    color: Optional[int] = None
 
 
 @dataclass
