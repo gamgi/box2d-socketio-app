@@ -3,7 +3,7 @@ from ecs.base_system import System
 from ecs.context import Context
 from collections import defaultdict
 import client_interfaces as ci
-from components import Box2DBody, Box2DWorld, Position, Velocity
+from components import Box2DBody, Box2DWorld, Position, Velocity, Collidable
 from components import Player, Match, Team, Input
 from constants import LEFT, RIGHT, UP
 
@@ -38,6 +38,7 @@ class PlayerSystem(System):
         position = Position.from_body(player_body)
         velocity = Velocity.from_body(player_body)
         player = Player(color=int('0xff0000', 16))
+        collidable = Collidable()
 
         self.context.upsert(
             entity_id,
@@ -45,6 +46,7 @@ class PlayerSystem(System):
             position,
             velocity,
             player,
+            collidable
         )
 
     def _assign_team(self, entity_id: str):
