@@ -187,6 +187,12 @@ class Context(Generic[T]):
 
         self._ignore_updated_entities.add(entity_id)
 
+    def remove_entity(self, entity_id: str):
+        for component_name in self.entities.keys():
+            self._updated_entities[component_name].discard(entity_id)
+            self.entities[component_name].discard(entity_id)
+            self.repository[component_name].pop(entity_id, None)  # type:ignore
+
     def _new_id(self) -> str:
         entity_id = str(self._counter)
         self._counter += 1

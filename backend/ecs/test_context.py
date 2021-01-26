@@ -284,3 +284,16 @@ class TestContext:
     def test_get_entities_with_nonexistent_class(self, empty_repository):
         c = Context(repository=empty_repository)
         assert c.get_entities_with(Fake) == set()
+
+    def test_remove_entity(self, empty_repository):
+        c = Context(repository=empty_repository)
+        c.upsert('1', Foo(1))
+        c.upsert('2', Bar(2))
+        c.upsert('3', Foo(3), Bar(4))
+
+        assert c.get_entities_with(Foo) == {'1', '3'}
+
+        c.remove_entity('3')
+
+        assert c.get_entities_with(Foo) == {'1'}
+        assert '3' not in c.get_all_updated_entities()
