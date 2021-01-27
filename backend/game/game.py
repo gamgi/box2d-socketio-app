@@ -34,6 +34,14 @@ class Game:
 
         return si.JoinRoomDTO(room=room)
 
+    def leave_room(self, sid: str, room_id: str):
+        room = self.rooms.get(room_id)
+        if room and sid in room.players:
+            self.trigger_event(ExternalEvent.PLAYER_LEAVE, room_id, sid)
+            room.players.remove(sid)
+            self.contexts[room_id].remove_entity(sid)
+            logging.info(f'{sid} left room {room_id}')
+
     def get_rooms(self) -> si.GetRoomsDTO:
         rooms = [room for room in self.rooms.values() if not room.private]
         response = si.GetRoomsDTO(rooms=rooms)

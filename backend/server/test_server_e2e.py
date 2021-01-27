@@ -96,5 +96,5 @@ class TestServerE2E:
                         velocity=b2Vec2(0, 0),
                         shape=ANY,
                         color=ANY),
-                ]), 'room0')
+                ], remove=[]), 'room0')
             ], any_order=True)

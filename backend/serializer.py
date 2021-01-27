@@ -10,26 +10,28 @@ Shape = Union[si.RectShapeData, si.ArcShapeData]
 
 def create_short_sync(context: Context, sort=False) -> si.ShortSyncDTO:
     if not SHORT_SYNC_COMPONENTS:
-        return si.ShortSyncDTO([])
+        return si.ShortSyncDTO([], [])
 
     entity_ids = context.get_updated_entities_for(*SHORT_SYNC_COMPONENTS)
     if sort:
         entity_ids = sorted(entity_ids)  # type: ignore
 
     updates = [_create_short_sync(entity_id, context) for entity_id in entity_ids]
-    return si.ShortSyncDTO(updates)
+    removed = list(context.get_removed_entities())
+    return si.ShortSyncDTO(updates, removed)
 
 
 def create_long_sync(context: Context, sort=False) -> si.LongSyncDTO:
     if not LONG_SYNC_COMPONENTS:
-        return si.LongSyncDTO([])
+        return si.ShortSyncDTO([], [])
 
     entity_ids = context.get_updated_entities_for(*LONG_SYNC_COMPONENTS)
     if sort:
         entity_ids = sorted(entity_ids)  # type: ignore
 
     updates = [_create_long_sync(entity_id, context) for entity_id in entity_ids]
-    return si.LongSyncDTO(updates)
+    removed = list(context.get_removed_entities())
+    return si.LongSyncDTO(updates, removed)
 
 
 def _create_short_sync(entity_id: str, context: Context) -> si.ShortEntityData:

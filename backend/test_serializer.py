@@ -42,7 +42,13 @@ class TestSerializerShort:
         assert create_short_sync(context, sort=True) == si.ShortSyncDTO([
             si.ShortEntityData(id='1', position=b2Vec2(0, 1), velocity=b2Vec2(0, 0)),
             si.ShortEntityData(id='2', position=b2Vec2(0, 0), velocity=b2Vec2(0, 0)),
-        ])
+        ], remove=[])
+
+    def test_short_sync_includes_removed(self, context):
+        context.upsert('0', Position.Origin(), Velocity.Still())
+        context.remove_entity('0')
+
+        assert create_short_sync(context, sort=True) == si.ShortSyncDTO([], remove=['0'])
 
 
 class TestSerializerLong:
@@ -95,4 +101,10 @@ class TestSerializerLong:
                 velocity=b2Vec2(0, 0),
                 shape=si.ArcShapeData(x=3.0, y=4.0, radius=5, start_angle=ANY, end_angle=ANY)
             )
-        ])
+        ], remove=[])
+
+    def test_long_sync_includes_removed(self, context):
+        context.upsert('0', Position.Origin(), Velocity.Still())
+        context.remove_entity('0')
+
+        assert create_long_sync(context, sort=True) == si.LongSyncDTO([], remove=['0'])

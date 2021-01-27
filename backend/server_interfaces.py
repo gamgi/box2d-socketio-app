@@ -94,11 +94,13 @@ class EntityData(Interface):
 @dataclass
 class ShortSyncDTO(Interface):
     updates: List[ShortEntityData]
+    remove: List[str]
 
 
 @dataclass
 class LongSyncDTO(Interface):
     updates: List[EntityData]
+    remove: List[str]
 
 
 @dataclass

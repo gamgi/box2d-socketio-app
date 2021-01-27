@@ -54,8 +54,11 @@ class Server(socketio.Namespace):
     def on_connect(self, sid, environ):
         pass
 
-    def on_disconnect(self, sid):
-        pass
+    def on_disconnect(self, sid: str):
+        room_id = self._get_room_id(sid)
+        if not room_id:
+            return
+        self.game.leave_room(sid, room_id)
 
     @returns_error_dto
     def on_get_rooms(self, sid: str, data: None):
@@ -72,7 +75,9 @@ class Server(socketio.Namespace):
         return self.game.create_room(sid, ci.CreateRoomDTO(**data), callback)
 
     def on_input(self, sid: str, data: Dict):
-        room_id = self.sio.rooms(sid, namespace='/')[-1]
+        room_id = self._get_room_id(sid)
+        if not room_id:
+            return
         return self.game.input(sid, room_id, ci.InputDTO(**data))
 
     def _get_dt(self) -> float:
@@ -80,3 +85,9 @@ class Server(socketio.Namespace):
             return time() - self._last_update
         else:
             return 1 / 100
+
+    def _get_room_id(self, sid: str) -> Union[str, None]:
+        rooms = set(self.sio.rooms(sid)) - {sid}
+        if not rooms:
+            return None
+        return rooms.pop()  # type: ignore

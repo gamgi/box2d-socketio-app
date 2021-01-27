@@ -106,7 +106,7 @@ class TestGame:
         callback = Mock()
 
         game.update_short(1, callback)
-        callback.assert_called_once_with(si.ShortSyncDTO(updates=[]), room_id)
+        callback.assert_called_once_with(si.ShortSyncDTO(updates=[], remove=[]), room_id)
         callback.reset_mock()
 
         game.contexts['room0'].upsert('0', Position.at([0, 0]))
