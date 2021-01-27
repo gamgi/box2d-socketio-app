@@ -46,7 +46,7 @@ export interface ArcShapeData {
 export interface PolygonShapeData {
   x: number;
   y: number;
-  vertices: Array<[number]>;
+  vertices: Array<[number, number]>;
   fill: boolean;
   form: string;
 }
