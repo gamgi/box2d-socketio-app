@@ -1,3 +1,4 @@
+import logging
 from typing import List, Dict
 from ecs.base_system import System
 from ecs.context import Context
@@ -15,6 +16,10 @@ class PlayerSystem(System):
     def on_player_join(self, sid: str):
         self._spawn_player(sid)
         self._assign_team(sid)
+        logging.info('spawned')
+
+    def on_player_leave(self, sid: str):
+        self._remove_player(sid)
 
     def on_input(self, sid: str, data: ci.InputDTO):
         move_left = LEFT in data.keys_down
@@ -48,6 +53,12 @@ class PlayerSystem(System):
             player,
             collidable
         )
+
+    def _remove_player(self, entity_id: str):
+        world = self._get_world()
+        body = self.context.component(entity_id, Box2DBody)
+        if body:
+            world.DestroyBody(body.body)  # type:ignore
 
     def _assign_team(self, entity_id: str):
         teams = self._get_teams_player_count()

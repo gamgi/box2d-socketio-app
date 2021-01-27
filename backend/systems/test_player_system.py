@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import Mock
 from systems.player_system import PlayerSystem
 import client_interfaces as ci
-from components import Match, Team, Player, Input, Box2DWorld
+from components import Match, Team, Player, Input, Box2DWorld, Box2DBody
 
 
 @pytest.fixture
@@ -48,3 +48,12 @@ class TestPlayerSystem:
         )
         assert context.component('player1', Input).move_right
         assert context.component('player1', Input).move_left is False
+
+    def test_on_player_leave_destroys_body(self, system, context):
+        system.on_player_join('player1')
+        assert context.get_entities_with(Box2DBody) == {'player1'}
+        world = context.singleton(Box2DWorld).world
+        body = context.component('player1', Box2DBody).body
+
+        system.on_player_leave('player1')
+        world.DestroyBody.assert_called_with(body)  # type: ignore
