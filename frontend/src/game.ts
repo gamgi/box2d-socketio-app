@@ -2,9 +2,8 @@ import { Application, Container, IResourceDictionary } from 'pixi.js';
 import { EntityManager } from './entityManager';
 import { si, Client } from './lib';
 import { METERS_TO_PX, Y_DIRECTION } from './constants';
+import { Vec2 } from './types';
 import { isPolygonShape } from './componentUtils';
-
-type Vec = [number, number];
 
 export class Game {
   public stage: Container = new Container();
@@ -43,26 +42,24 @@ export class Game {
     });
   }
 
-  private clientTransformUpdateInplace(update: si.EntityData | si.ShortEntityData): void {
+  private clientTransformUpdateInplace(update: Partial<si.EntityData>): void {
     // transform coordinate system and units from MKS to local game equivalent
-    if ('position' in update) {
-      update.position = clientTransformVec(update.position as Vec);
+    if (update?.position) {
+      update.position = clientTransformPosition(update.position as Vec2);
     }
-    if ('shape' in update) {
+    if (update?.shape) {
       update.shape = clientTransformShape(update.shape);
     }
   }
 }
 
-function clientTransformVec(vector: Vec): Vec {
+function clientTransformPosition(vector: Vec2): Vec2 {
   return [vector[0] * METERS_TO_PX, vector[1] * METERS_TO_PX * Y_DIRECTION];
 }
 
 function clientTransformShape(shape: si.EntityData['shape']): si.EntityData['shape'] {
   if (isPolygonShape(shape)) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    shape.vertices = (shape.vertices as Vec[]).map(clientTransformVec) as Array<[number]>;
+    shape.vertices = (shape.vertices as Vec2[]).map(clientTransformPosition);
     shape.x = shape.x * METERS_TO_PX;
     shape.y = shape.y * METERS_TO_PX * Y_DIRECTION;
   }
