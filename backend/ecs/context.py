@@ -12,6 +12,7 @@ class Context(Generic[T]):
         self.entities: DefaultDict[str, Set[str]] = defaultdict(set)
         self.repository = repository
         self._updated_entities: DefaultDict[str, Set[str]] = defaultdict(set)
+        self._removed_entities: Set[str] = set()
         self._ignore_updated_entities: Set[str] = set()
         self._counter = 0
 
@@ -85,6 +86,14 @@ class Context(Generic[T]):
             for component in components:
                 self._updated_entities[component.component_name] -= updated
         return updated
+
+    def get_removed_entities(self, reset=True) -> Set[str]:
+        """Return ids of entities that have been removed"""
+
+        removed = self._removed_entities.copy()
+        if reset:
+            self._removed_entities = set()
+        return removed
 
     @overload
     def singleton(self, component: Type[Component], field: str):
@@ -192,6 +201,9 @@ class Context(Generic[T]):
             self._updated_entities[component_name].discard(entity_id)
             self.entities[component_name].discard(entity_id)
             self.repository[component_name].pop(entity_id, None)  # type:ignore
+
+        if entity_id not in self._ignore_updated_entities:
+            self._removed_entities.add(entity_id)
 
     def _new_id(self) -> str:
         entity_id = str(self._counter)

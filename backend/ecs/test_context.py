@@ -297,3 +297,25 @@ class TestContext:
 
         assert c.get_entities_with(Foo) == {'1'}
         assert '3' not in c.get_all_updated_entities()
+
+    def test_get_removed_entities(self, empty_repository):
+        c = Context(repository=empty_repository)
+        c.upsert('1', Foo(1))
+        c.upsert('2', Bar(2))
+        c.upsert('3', Foo(3), Bar(4))
+
+        c.remove_entity('3')
+
+        assert c.get_removed_entities() == {'3'}
+        assert c.get_removed_entities() == set()
+
+    def test_get_removed_entites_does_not_return_ignored(self, empty_repository):
+        c = Context(repository=empty_repository)
+        c.upsert('1', Foo(1))
+        c.upsert('2', Bar(2))
+        c.upsert('3', Foo(3), Bar(4))
+
+        c.ignore_entity_updates('3')
+        c.remove_entity('3')
+
+        assert c.get_removed_entities() == set()
