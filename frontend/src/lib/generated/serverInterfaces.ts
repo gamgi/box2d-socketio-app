@@ -67,10 +67,12 @@ export interface EntityData {
 
 export interface ShortSyncDTO {
   updates: Array<ShortEntityData>;
+  remove: Array<string>;
 }
 
 export interface LongSyncDTO {
   updates: Array<EntityData>;
+  remove: Array<string>;
 }
 
 export interface ErrorDTO {

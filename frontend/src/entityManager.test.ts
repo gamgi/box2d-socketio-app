@@ -4,7 +4,7 @@ import { si } from './lib';
 
 describe('EntityManager', () => {
   const mockPixi = { renderer: { render: jest.fn() } } as any;
-  const mockStage = { addChild: () => {} } as any;
+  const mockStage = { addChild: jest.fn() } as any;
   const entityWithShape: Partial<si.EntityData> = {
     shape: {
       x: 0,
@@ -57,5 +57,23 @@ describe('EntityManager', () => {
     const position = manager.entities['0'].local.sprites[0].getGlobalPosition();
 
     expect(position).toEqual({ x: 0, y: 1 });
+  });
+
+  it('removeEntity removes entity', () => {
+    const manager = new EntityManager(mockPixi, mockStage);
+    manager.updateEntity('0', { id: '0', position: [0, 1] });
+    expect('0' in manager.entities).toBeTruthy();
+    manager.removeEntity('0');
+    expect('0' in manager.entities).toBeFalsy();
+  });
+
+  it('removeEntity destroys sprites', () => {
+    const manager = new EntityManager(mockPixi, mockStage);
+    manager.updateEntity('0', { ...entityWithShape, id: '0' });
+
+    const destroy = jest.spyOn(manager.entities['0'].local.sprites[0], 'destroy');
+    manager.removeEntity('0');
+
+    expect(destroy).toHaveBeenCalled();
   });
 });

@@ -31,6 +31,7 @@ export class Game {
         this.clientTransformUpdateInplace(update);
         this.entityManager.updateEntity(update.id, update);
       }
+      data.remove.forEach((id) => this.entityManager.removeEntity(id));
     });
 
     this.client.eventEmitter.on('short_sync', (data: si.ShortSyncDTO) => {
@@ -38,6 +39,7 @@ export class Game {
         this.clientTransformUpdateInplace(update);
         this.entityManager.updateEntityShort(update.id, update);
       }
+      data.remove.forEach((id) => this.entityManager.removeEntity(id));
     });
   }
 

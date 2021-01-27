@@ -39,6 +39,17 @@ export class EntityManager {
     }
   }
 
+  public removeEntity(id: string): void {
+    if (id in this.entities) {
+      const entity = this.entities[id];
+      entity.local.sprites.forEach((sprite) => {
+        sprite.destroy();
+      });
+      entity.local.sprites = [];
+      delete this.entities[id];
+    }
+  }
+
   private newEntity(update: Partial<si.EntityData>): Entity {
     return { server: update, local: { sprites: [] } };
   }
