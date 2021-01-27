@@ -11,8 +11,14 @@ export class ClientError extends Error {
   }
 }
 
-export class ConnectionError extends ClientError {
+export class ConnectionFailedError extends ClientError {
   constructor(message: string, userMessage = 'Failed to connect to server', userDescription?: string) {
+    super(message, userMessage, userDescription);
+  }
+}
+
+export class ConnectionClosedError extends ClientError {
+  constructor(message: string, userMessage = 'Connection to server closed', userDescription?: string) {
     super(message, userMessage, userDescription);
   }
 }

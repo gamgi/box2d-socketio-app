@@ -1,5 +1,5 @@
 import { Application, IResourceDictionary } from 'pixi.js';
-import { ci, Client, ClientError, loadResources } from './lib';
+import { ci, Client, ClientError, loadResources, ServerError } from './lib';
 import { Keyboard, Key, KeyboardContext } from './lib/keyboard';
 import { Game } from './game';
 import { Ui, MessageLevel } from './ui';
@@ -49,8 +49,10 @@ export class App {
       await this.game.createRoom('my room', false);
       this.ui.clearMessage();
     } catch (err) {
-      if (err instanceof ClientError) {
+      if (err instanceof ClientError || err instanceof ServerError) {
         this.ui.showMessage(`${err.userMessage}`, MessageLevel.ERROR);
+      } else {
+        this.ui.showMessage('Unknown error', MessageLevel.ERROR);
       }
       throw err;
     }

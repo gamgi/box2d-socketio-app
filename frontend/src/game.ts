@@ -21,7 +21,15 @@ export class Game {
   }
 
   public async createRoom(name: string, isPrivate: boolean): Promise<void> {
-    await this.client.createRoom({ name, private: isPrivate });
+    // eslint-disable-next-line camelcase
+    const data = { name, private: isPrivate };
+    await this.client.sendOrFailWith<si.CreateRoomDTO>('join_room', data, 'Failed to create room');
+  }
+
+  public async joinRoom(roomId: string): Promise<void> {
+    // eslint-disable-next-line camelcase
+    const data = { room_id: roomId };
+    await this.client.sendOrFailWith<si.JoinRoomDTO>('join_room', data, 'Failed to join room');
   }
 
   private initClient(): void {

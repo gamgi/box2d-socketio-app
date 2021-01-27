@@ -1,7 +1,8 @@
 import { io, Socket, SocketOptions, ManagerOptions } from 'socket.io-client';
 import { utils } from 'pixi.js';
 import { ci, si } from './index';
-import { ConnectionError } from './clientErrors';
+import { ConnectionFailedError, ConnectionClosedError } from './clientErrors';
+import { ServerError } from './serverErrors';
 
 type ClientOptions = {
   url: string;
@@ -27,7 +28,7 @@ export class Client {
     return new Promise((resolve, reject) => {
       const connectTimer = setTimeout(() => {
         this.socket.close();
-        reject(new ConnectionError('Connection timed out'));
+        reject(new ConnectionFailedError('Connection timed out'));
       }, timeout);
       this.socket.once('connect', function () {
         clearTimeout(connectTimer);
@@ -47,6 +48,21 @@ export class Client {
       throw new Error(response.message);
     }
     return response;
+  }
+
+  public async send<T>(eventName: string, data: Record<string, any>): Promise<T> {
+    return await emitAsPromise<T>(this.socket, eventName, data);
+  }
+
+  public async sendOrFailWith<T>(eventName: string, data: Record<string, any>, userMessage: string): Promise<T> {
+    try {
+      return await emitAsPromise<T>(this.socket, eventName, data);
+    } catch (err) {
+      if (err instanceof ServerError) {
+        throw new ServerError(err.message, userMessage, err.userMessage, err.code);
+      }
+      throw err;
+    }
   }
 
   public get connected(): boolean {
@@ -70,13 +86,13 @@ function emitAsPromise<T extends Record<string, any>>(
   socket: Socket,
   event: string,
   data: Record<string, any>,
-): Promise<T | si.ErrorDTO> {
+): Promise<T> {
   return new Promise((resolve, reject) => {
-    const parseResponse = (response: T | null) => {
+    const parseResponse = (response: T | si.ErrorDTO | null) => {
       if (!response) {
-        reject({ error: true, code: 500, message: 'No response from server' });
+        reject(new ConnectionClosedError('No response from server'));
       } else if (isError(response)) {
-        reject(response);
+        reject(new ServerError(response.message, 'Server error', response.message, response.code));
       } else {
         resolve(response);
       }
