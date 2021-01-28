@@ -42,12 +42,16 @@ export class EntityManager {
   public removeEntity(id: string): void {
     if (id in this.entities) {
       const entity = this.entities[id];
-      entity.local.sprites.forEach((sprite) => {
-        sprite.destroy();
-      });
-      entity.local.sprites = [];
+      this.removeEntitySprites(entity);
       delete this.entities[id];
     }
+  }
+
+  private removeEntitySprites(entity: Entity): void {
+    entity.local.sprites.forEach((sprite) => {
+      sprite.destroy();
+    });
+    entity.local.sprites = [];
   }
 
   private newEntity(update: Partial<si.EntityData>): Entity {
@@ -56,6 +60,8 @@ export class EntityManager {
 
   private updateEntityShape(entity: Entity, shape: si.EntityData['shape'], color: number) {
     if (isPolygonShape(shape)) {
+      this.removeEntitySprites(entity);
+
       const graphic = new Graphics().beginFill(color).drawPolygon(shape.vertices.flat()).endFill();
       const sprite = renderGraphicToSprite(graphic, this.pixi);
 
