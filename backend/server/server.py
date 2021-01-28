@@ -67,7 +67,7 @@ class Server(socketio.Namespace):
     @returns_error_dto
     def on_join_room(self, sid: str, data: Dict):
         callback = partial(self.sio.enter_room, sid)
-        return self.game.join_room(sid, ci.JoinRoomDTO(**data), callback)
+        return self.game.join_room(sid, ci.JoinRoomDTO(**data), callback, self.callback_long)
 
     @returns_error_dto
     def on_create_room(self, sid: str, data: Dict):

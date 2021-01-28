@@ -17,7 +17,12 @@ class Game:
         self._systems_classes = resolve_dependency_order(systems_classes)
         self._repository_factory = repository_factory
 
-    def join_room(self, sid: str, data: ci.JoinRoomDTO, callback_enter_room: Callable) -> si.JoinRoomDTO:
+    def join_room(
+            self,
+            sid: str,
+            data: ci.JoinRoomDTO,
+            callback_enter_room: Callable,
+            callback_emit: Callable) -> si.JoinRoomDTO:
         room = self.rooms.get(data.room_id)
         if not room:
             raise GameError('Room does not exist')
@@ -31,6 +36,7 @@ class Game:
         room.players.append(sid)
         callback_enter_room(room.id)
         self.trigger_event(ExternalEvent.PLAYER_JOIN, room.id, sid)
+        self.sync_full(room.id, sid, callback_emit)
 
         return si.JoinRoomDTO(room=room)
 
@@ -51,18 +57,24 @@ class Game:
         if self._is_in_a_room(sid):
             raise GameError('You are already in a room')
 
-        room = si.RoomMeta(id=self._new_id(), players=[sid], max_players=4, level='beach', **data.__dict__)
-        context = Context(repository=self._repository_factory())
-
-        self.rooms[room.id] = room
-        self.contexts[room.id] = context
-        self.systems[room.id] = [cls(context) for cls in self._systems_classes]
+        room = self._create_room(data)
+        room.players = [sid]
 
         callback_enter_room(room.id)
         self.trigger_event(ExternalEvent.GAME_INIT, room.id, room)
         self.trigger_event(ExternalEvent.PLAYER_JOIN, room.id, sid)
 
         return si.CreateRoomDTO(room=room)
+
+    def _create_room(self, data: ci.CreateRoomDTO) -> si.RoomMeta:
+        room = si.RoomMeta(id=self._new_id(), players=[], max_players=4, level='beach', **data.__dict__)
+        context = Context(repository=self._repository_factory())
+
+        self.rooms[room.id] = room
+        self.contexts[room.id] = context
+        self.systems[room.id] = [cls(context) for cls in self._systems_classes]
+        logging.info('created room')
+        return room
 
     def input(self, sid: str, room_id: str, data: ci.InputDTO):
         self.trigger_event(ExternalEvent.INPUT, room_id, sid, data)
@@ -84,10 +96,16 @@ class Game:
 
     def update_long(self, callback_emit: Callable, sort: bool = False):
         for room_id, context in self.contexts.items():
+            print(set.union(*context.entities.values()))
             self.trigger_event(ExternalEvent.UPDATE, room_id)
 
             updates = serializer.create_long_sync(context, sort)
             callback_emit(updates, room_id)
+
+    def sync_full(self, room_id: str, sid: str, callback_emit: Callable, sort: bool = False):
+        context = self.contexts[room_id]
+        updates = serializer.create_full_sync(context, sort)
+        callback_emit(updates, room_id)
 
     def _get_players(self) -> Set[str]:
         return set(player_id for room in self.rooms.values() for player_id in room.players)

@@ -9,6 +9,7 @@ Shape = Union[si.RectShapeData, si.ArcShapeData]
 
 
 def create_short_sync(context: Context, sort=False) -> si.ShortSyncDTO:
+    """Create sync update for high-frequency update entities"""
     if not SHORT_SYNC_COMPONENTS:
         return si.ShortSyncDTO([], [])
 
@@ -22,8 +23,9 @@ def create_short_sync(context: Context, sort=False) -> si.ShortSyncDTO:
 
 
 def create_long_sync(context: Context, sort=False) -> si.LongSyncDTO:
+    """Create sync update for all updated entities"""
     if not LONG_SYNC_COMPONENTS:
-        return si.ShortSyncDTO([], [])
+        return si.LongSyncDTO([], [])
 
     entity_ids = context.get_updated_entities_for(*LONG_SYNC_COMPONENTS)
     if sort:
@@ -32,6 +34,20 @@ def create_long_sync(context: Context, sort=False) -> si.LongSyncDTO:
     updates = [_create_long_sync(entity_id, context) for entity_id in entity_ids]
     removed = list(context.get_removed_entities())
     return si.LongSyncDTO(updates, removed)
+
+
+def create_full_sync(context: Context, sort=False) -> si.LongSyncDTO:
+    """Create sync update for all entities"""
+
+    if not LONG_SYNC_COMPONENTS:
+        return si.LongSyncDTO([], [])
+
+    entity_ids = context.get_entities_with(*LONG_SYNC_COMPONENTS)
+    if sort:
+        entity_ids = sorted(entity_ids)  # type: ignore
+
+    updates = [_create_long_sync(entity_id, context) for entity_id in entity_ids]
+    return si.LongSyncDTO(updates, [])
 
 
 def _create_short_sync(entity_id: str, context: Context) -> si.ShortEntityData:
