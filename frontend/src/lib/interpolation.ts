@@ -1,20 +1,18 @@
 /* eslint-disable max-classes-per-file */
-import { Sprite, Texture } from 'pixi.js';
-import { si, Spline, createLinear, createSpline, evalSpline, Vec2 } from '.';
+import { Application, Sprite } from 'pixi.js';
+import { Spline, createLinear, createSpline, evalSpline, Vec2 } from '.';
 
-type InterpolationData = {
+export type InterpolationData = {
   position: Vec2;
   velocity: Vec2;
 };
 
-function parseData(data: Partial<si.EntityData>): InterpolationData {
-  return {
-    position: data.position ? (data.position as Vec2) : [0, 0],
-    velocity: data.velocity ? (data.velocity as Vec2) : [0, 0],
-  };
-}
+const isDestroyed = (sprite: Sprite): boolean => {
+  // eslint-disable-next-line no-underscore-dangle
+  return ((sprite as unknown) as Record<'_destroyed', boolean>)._destroyed;
+};
 
-export class InterpolatedSprite extends Sprite {
+export class InterpolatedSprite {
   public interpolationSpline: Spline;
   public extrapolationLine: Spline;
   public _destroyed = false;
@@ -22,10 +20,9 @@ export class InterpolatedSprite extends Sprite {
   private interpolationFrames = 1;
   private interpolationData: InterpolationData;
 
-  constructor(texture: Texture, data: Partial<si.EntityData>) {
-    super(texture);
-    this.interpolationData = parseData(data);
-    this.position.set(this.interpolationData.position[0], this.interpolationData.position[1]);
+  constructor(public sprite: Sprite, data: InterpolationData) {
+    this.interpolationData = data;
+    this.sprite.position.set(this.interpolationData.position[0], this.interpolationData.position[1]);
 
     // initial splines
     this.interpolationSpline = {
@@ -45,11 +42,11 @@ export class InterpolatedSprite extends Sprite {
       t <= 1
         ? evalSpline(this.interpolationSpline, t) // interpolate
         : evalSpline(this.extrapolationLine, t - 1); // extrapolate
-    this.position.set(x, y);
+    this.sprite.position.set(x, y);
   }
 
   public recalculateInterpolation(
-    data: Partial<si.EntityData>,
+    newData: InterpolationData,
     serverDeltaTime: number,
     localDeltaFrames: number,
     velocityCorrection?: number,
@@ -57,8 +54,7 @@ export class InterpolatedSprite extends Sprite {
     const vc = velocityCorrection ?? 0.5 * serverDeltaTime;
 
     const oldData = this.interpolationData;
-    const oldPos: Vec2 = [this.position.x, this.position.y];
-    const newData = parseData(data);
+    const oldPos: Vec2 = [this.sprite.position.x, this.sprite.position.y];
 
     this.interpolationSpline = createSpline(
       oldPos,
@@ -73,5 +69,36 @@ export class InterpolatedSprite extends Sprite {
     this.interpolationData = newData;
     this.interpolationFrame = 0;
     this.interpolationFrames = localDeltaFrames;
+  }
+}
+
+export class Interpolator {
+  private tLastUpdate;
+  private elapsedFrames = 0;
+  private sprites: InterpolatedSprite[] = [];
+
+  constructor(pixi: Application) {
+    this.tLastUpdate = performance.now();
+    pixi.ticker.add(() => {
+      this.elapsedFrames++;
+      this.sprites = this.sprites.filter((sprite) => !isDestroyed(sprite.sprite));
+      this.sprites.forEach((sprite) => sprite.interpolate(1));
+    });
+  }
+
+  public getInterpolationData(): { serverDeltaTime: number; localDeltaFrames: number } {
+    return { serverDeltaTime: 0.5, localDeltaFrames: 2 };
+  }
+
+  public onReceiveData(): void {
+    this.elapsedFrames = 0;
+
+    this.tLastUpdate = performance.now();
+  }
+
+  public new(sprite: Sprite, data: InterpolationData): InterpolatedSprite {
+    const interpolated = new InterpolatedSprite(sprite, data);
+    this.sprites.push(interpolated);
+    return interpolated;
   }
 }

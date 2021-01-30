@@ -1,13 +1,14 @@
-import { RenderTexture } from 'pixi.js';
+import { Sprite } from 'pixi.js';
 import { evalSpline } from './spline';
 import { InterpolatedSprite } from './interpolation';
+import { Vec2 } from './types';
 
-const mockTexture = RenderTexture.create();
+const mockSprite = new Sprite();
 
 describe('InterpolatedSprite', () => {
   it('initializes Spline from current position to current position', () => {
-    const initialPosition = [1, 2];
-    const sprite = new InterpolatedSprite(mockTexture, {
+    const initialPosition: Vec2 = [1, 2];
+    const sprite = new InterpolatedSprite(mockSprite, {
       position: initialPosition,
       velocity: [0, 0],
     });
@@ -15,17 +16,17 @@ describe('InterpolatedSprite', () => {
   });
 
   describe('recalculateInterpolation', () => {
-    const initialPosition = [1, 2];
-    let sprite: InterpolatedSprite;
+    const initialPosition: Vec2 = [1, 2];
+    let interpolated: InterpolatedSprite;
     beforeEach(() => {
-      sprite = new InterpolatedSprite(mockTexture, {
+      interpolated = new InterpolatedSprite(mockSprite, {
         position: initialPosition,
         velocity: [0, 0],
       });
     });
 
     it('initial point evaluates to current location', () => {
-      sprite.recalculateInterpolation(
+      interpolated.recalculateInterpolation(
         {
           position: [5, 5],
           velocity: [0, 0],
@@ -34,12 +35,12 @@ describe('InterpolatedSprite', () => {
         1,
         1,
       );
-      expect([sprite.position.x, sprite.position.y]).toEqual([1, 2]);
-      expect(evalSpline(sprite.interpolationSpline, 0)).toEqual([1, 2]);
+      expect([interpolated.sprite.position.x, interpolated.sprite.position.y]).toEqual([1, 2]);
+      expect(evalSpline(interpolated.interpolationSpline, 0)).toEqual([1, 2]);
     });
 
     it('end point evaluates to target location with velocity=0', () => {
-      sprite.recalculateInterpolation(
+      interpolated.recalculateInterpolation(
         {
           position: [5, 5],
           velocity: [0, 0],
@@ -48,11 +49,11 @@ describe('InterpolatedSprite', () => {
         1,
         1,
       );
-      expect(evalSpline(sprite.interpolationSpline, 1)).toEqual([5, 5]);
+      expect(evalSpline(interpolated.interpolationSpline, 1)).toEqual([5, 5]);
     });
 
     it('end point evaluates to target location + velocity * t', () => {
-      sprite.recalculateInterpolation(
+      interpolated.recalculateInterpolation(
         {
           position: [5, 5],
           velocity: [2, 3],
@@ -61,11 +62,11 @@ describe('InterpolatedSprite', () => {
         1,
         1,
       );
-      expect(evalSpline(sprite.interpolationSpline, 1)).toEqual([5 + 2 * 2, 5 + 3 * 2]);
+      expect(evalSpline(interpolated.interpolationSpline, 1)).toEqual([5 + 2 * 2, 5 + 3 * 2]);
     });
 
     it('excess frames do extrapolate spline', () => {
-      sprite.recalculateInterpolation(
+      interpolated.recalculateInterpolation(
         {
           position: [5, 5],
           velocity: [1, 1],
@@ -74,10 +75,10 @@ describe('InterpolatedSprite', () => {
         10,
         1,
       );
-      sprite.interpolate(10);
-      expect([sprite.position.x, sprite.position.y]).toEqual([6, 6]);
-      sprite.interpolate(20);
-      expect([sprite.position.x, sprite.position.y]).toEqual([8, 8]);
+      interpolated.interpolate(10);
+      expect([interpolated.sprite.position.x, interpolated.sprite.position.y]).toEqual([6, 6]);
+      interpolated.interpolate(20);
+      expect([interpolated.sprite.position.x, interpolated.sprite.position.y]).toEqual([8, 8]);
     });
   });
 });

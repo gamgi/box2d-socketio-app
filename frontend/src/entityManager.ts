@@ -1,11 +1,21 @@
-import { Application, Container, Sprite, Graphics } from 'pixi.js';
-import { si } from './lib';
+import { Application, Container, Sprite, Graphics, SCALE_MODES } from 'pixi.js';
+import { si, Interpolator, Vec2, Spline, InterpolationData, InterpolatedSprite } from './lib';
 import { renderGraphicToSprite } from './entityUtils';
 import { isPolygonShape, isArcShape } from './componentUtils';
 
 type ServerEntityData = Partial<si.EntityData & si.ShortEntityData>;
 type LocalEntityData = {
   sprites: Sprite[];
+  interpolated?: InterpolatedSprite;
+  // interpolated?: InterpolationData;
+  // interpolated?: {
+  //   position?: Vec2;
+  //   velocity?: Vec2;
+  //   interpolationSpline: Spline;
+  //   extrapolationLine: Spline;
+  //   // position: number[] | null;
+  //   // velocity: number[] | null;
+  // };
 };
 type Entity = {
   server: ServerEntityData;
@@ -14,16 +24,21 @@ type Entity = {
 
 export class EntityManager {
   public entities: Record<string, Entity> = {};
+  private interpolator: Interpolator;
 
-  constructor(private pixi: Application, private stage: Container) {}
+  constructor(private pixi: Application, private stage: Container) {
+    this.interpolator = new Interpolator(pixi);
+  }
+
+  public onReceiveData(): void {
+    this.interpolator.onReceiveData();
+  }
 
   public updateEntityShort(id: string, update: Partial<si.ShortEntityData>): void {
     this.updateEntity(id, update);
   }
 
   public updateEntity(id: string, update: Partial<si.EntityData>): void {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    // document.querySelector<HTMLDivElement>('#debug')!.innerHTML = JSON.stringify(Object.keys(this.entities));
     let entity: Entity;
     if (id in this.entities) {
       entity = this.entities[id];
@@ -36,8 +51,19 @@ export class EntityManager {
       this.updateEntityShape(entity, update.shape, update?.color ?? 0xffffff);
     }
 
-    if (update?.position) {
-      this.updateEntityPosition(entity, update.position);
+    if (update?.shape) {
+      this.initializeEntityInterpolation(
+        entity,
+        entity.local.sprites,
+        (update?.position ?? entity?.server?.position ?? [0, 0]) as Vec2,
+        (update?.velocity ?? entity?.server?.velocity ?? [0, 0]) as Vec2,
+      );
+    } else if (update?.position && entity.local.interpolated) {
+      this.updateEntityInterpolation(
+        entity,
+        (update?.position ?? entity?.server?.position ?? [0, 0]) as Vec2,
+        (update?.velocity ?? entity?.server?.velocity ?? [0, 0]) as Vec2,
+      );
     }
 
     if (update?.angle) {
@@ -83,6 +109,10 @@ export class EntityManager {
         .arc(shape.x + shape.radius, shape.y + shape.radius, shape.radius, shape.start_angle, shape.end_angle)
         .endFill();
       const sprite = renderGraphicToSprite(graphic, this.pixi);
+      entity.local.interpolated = this.interpolator.new(sprite, {
+        position: (entity?.server?.position ?? [0, 0]) as Vec2,
+        velocity: (entity?.server?.velocity ?? [0, 0]) as Vec2,
+      });
       sprite.pivot.set(shape.radius);
 
       entity.local.sprites = [sprite];
@@ -104,5 +134,17 @@ export class EntityManager {
         sprite.position.set(position![0], position![1]);
       });
     }
+  }
+
+  private initializeEntityInterpolation(entity: Entity, sprites: Sprite[], position: Vec2, velocity: Vec2) {
+    entity.local.interpolated = new InterpolatedSprite(sprites[0], { position, velocity });
+  }
+
+  private updateEntityInterpolation(entity: Entity, position: Vec2, velocity: Vec2) {
+    if (!entity?.local?.interpolated) {
+      return;
+    }
+
+    entity.local.interpolated.recalculateInterpolation({ position, velocity }, 1, 1);
   }
 }
