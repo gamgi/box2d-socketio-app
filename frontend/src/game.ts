@@ -58,6 +58,10 @@ export class Game {
     if (update?.shape) {
       update.shape = clientTransformShape(update.shape);
     }
+
+    if (update?.angle) {
+      update.angle = clientTransformAngleToRotation(update.angle);
+    }
   }
 }
 
@@ -80,6 +84,10 @@ function clientTransformShape(shape: si.EntityData['shape']): si.EntityData['sha
     shape.y = shape.y * METERS_TO_PX * Y_DIRECTION;
   }
   return shape;
+}
+
+function clientTransformAngleToRotation(angle: number): number {
+  return -angle;
 }
 
 function makeVerticesPositive(vertices: Vec2[]) {

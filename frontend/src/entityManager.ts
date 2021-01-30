@@ -22,6 +22,8 @@ export class EntityManager {
   }
 
   public updateEntity(id: string, update: Partial<si.EntityData>): void {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    // document.querySelector<HTMLDivElement>('#debug')!.innerHTML = JSON.stringify(Object.keys(this.entities));
     let entity: Entity;
     if (id in this.entities) {
       entity = this.entities[id];
@@ -91,7 +93,7 @@ export class EntityManager {
 
   private updateEntityAngle(entity: Entity, angle: number) {
     entity.local.sprites.forEach((sprite) => {
-      sprite.rotation = -angle;
+      sprite.rotation = angle;
     });
   }
 

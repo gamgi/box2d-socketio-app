@@ -59,6 +59,14 @@ describe('EntityManager', () => {
     expect(position).toEqual({ x: 0, y: 1 });
   });
 
+  it('updateEntity updates entity rotation', () => {
+    const manager = new EntityManager(mockPixi, mockStage);
+    manager.updateEntity('0', { ...entityWithShape, id: '0', angle: 1 });
+    const rotation = manager.entities['0'].local.sprites[0].rotation;
+
+    expect(rotation).toEqual(1);
+  });
+
   it('removeEntity removes entity', () => {
     const manager = new EntityManager(mockPixi, mockStage);
     manager.updateEntity('0', { id: '0', position: [0, 1] });
