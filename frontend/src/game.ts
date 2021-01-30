@@ -1,8 +1,7 @@
 import { Application, Container, IResourceDictionary } from 'pixi.js';
 import { EntityManager } from './entityManager';
-import { si, Client } from './lib';
+import { si, Client, Vec2 } from './lib';
 import { METERS_TO_PX, Y_DIRECTION } from './constants';
-import { Vec2 } from './types';
 import { isArcShape, isPolygonShape } from './componentUtils';
 
 export class Game {
