@@ -36,11 +36,11 @@ class PhysicsSystem(System):
 
     def _handle_input(self, entity_id: str, body: Box2DBody, input: Input, collidable: Collidable = None):
         if input.move_right:
-            body.body.ApplyForceToCenter(b2Vec2(50, 0), True)
+            body.body.ApplyForceToCenter(b2Vec2(5, 0), True)
         if input.move_left:
-            body.body.ApplyForceToCenter(b2Vec2(-50, 0), True)
+            body.body.ApplyForceToCenter(b2Vec2(-5, 0), True)
         if input.jump and collidable and 'floor' in collidable.collides_with:
-            body.body.ApplyLinearImpulse(b2Vec2(0, 25), body.body.position, True)
+            body.body.ApplyLinearImpulse(b2Vec2(0, 3), body.body.position, True)
 
     def _mark_entity_updated(
             self,
@@ -63,6 +63,15 @@ class PhysicsSystem(System):
     def _create_world(self):
         world = b2World(gravity=(0, -10), doSleep=True)
         self.context.new_singleton(Box2DWorld(world))
+
+        # left wall
+        world.CreateStaticBody(
+            shapes=b2EdgeShape(vertices=[(0, -6), (0, 0)]),
+        )
+        # right wall
+        world.CreateStaticBody(
+            shapes=b2EdgeShape(vertices=[(8, -6), (8, 0)]),
+        )
 
         floor_body = world.CreateStaticBody(
             shapes=b2EdgeShape(vertices=[(-20, -5.5), (20, -5.5)]),

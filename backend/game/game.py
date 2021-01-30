@@ -25,13 +25,13 @@ class Game:
             callback_emit: Callable) -> si.JoinRoomDTO:
         room = self.rooms.get(data.room_id)
         if not room:
-            raise GameError('Room does not exist')
+            raise GameError('Room does not exist', 404)
         elif len(room.players) >= room.max_players:
-            raise GameError('Room is full')
+            raise GameError('Room is full', 409)
         elif sid in room.players:
-            raise GameError('You are already in this room')
+            raise GameError('You are already in this room', 400)
         elif self._is_in_a_room(sid):
-            raise GameError('You are already in a room')
+            raise GameError('You are already in a room', 400)
 
         room.players.append(sid)
         callback_enter_room(room.id)

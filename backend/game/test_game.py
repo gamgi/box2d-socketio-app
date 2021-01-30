@@ -49,7 +49,7 @@ class TestGame:
 
         callback.assert_called_with(room_id)
 
-    def test_join_room(self):
+    def test_get_room(self):
         game = Game([], dict)
         game.create_room(self.sid, ci.CreateRoomDTO(name='my room', private=False), Mock())
 

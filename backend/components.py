@@ -53,6 +53,7 @@ class Angle(Component):
 @dataclass
 class Box2DWorld(Component):
     component_name = 'box2d_world'
+    sync = Sync.NO_SYNC
     world: b2World
 
 
@@ -69,6 +70,7 @@ class Box2DBody(Component):
 @dataclass
 class Collidable(Component):
     component_name = 'collidable'
+    sync = Sync.NO_SYNC
     collides_with: Set[str] = field(default_factory=set)
 
 
@@ -98,6 +100,7 @@ class Match(Component):
 @dataclass
 class Input(Component):
     component_name = 'input'
+    sync = Sync.NO_SYNC
     move_left: bool
     move_right: bool
     jump: bool

@@ -47,7 +47,7 @@ class Server(socketio.Namespace):
 
         shutdown_flag = threading.Event()
         sio.start_background_task(server.sync, shutdown_flag, TICKS_PER_SECOND)
-        eventlet.wsgi.server(eventlet.listen(('', 5000)), app)
+        eventlet.wsgi.server(eventlet.listen(('', 5000)), app, log_output=False)
 
         shutdown_flag.set()
 

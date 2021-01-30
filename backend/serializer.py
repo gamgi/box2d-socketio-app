@@ -42,7 +42,7 @@ def create_full_sync(context: Context, sort=False) -> si.LongSyncDTO:
     if not LONG_SYNC_COMPONENTS:
         return si.LongSyncDTO([], [])
 
-    entity_ids = context.get_entities_with(*LONG_SYNC_COMPONENTS)
+    entity_ids = context.get_entities_with(*LONG_SYNC_COMPONENTS, some=True)
     if sort:
         entity_ids = sorted(entity_ids)  # type: ignore
 
