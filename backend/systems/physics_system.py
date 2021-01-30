@@ -1,7 +1,7 @@
 from typing import Tuple, Dict
 from ecs.base_system import System
 from ecs.context import Context
-from components import Box2DBody, Box2DWorld, Position, Velocity, Input, Collidable
+from components import Box2DBody, Box2DWorld, Position, Velocity, Input, Collidable, Angle
 from Box2D import b2World, b2EdgeShape, b2Vec2
 from constants import BOX2D_VEL_ITERS, BOX2D_POS_ITERS, BodyType
 
@@ -15,18 +15,19 @@ class PhysicsSystem(System):
 
     def on_update_frame(self, dt: float):
         world = self._get_world()
-        entity_data = self.context.all_dict(Box2DBody, optional_components=[Position, Velocity, Input, Collidable])
+        entity_data = self.context.all_dict(
+            Box2DBody, optional_components=[Position, Velocity, Input, Collidable, Angle])
         self.do_update(entity_data, world, dt)
         for entity_id, data in entity_data.items():
-            body, position, velocity, input, collidable = data
-            self._mark_entity_updated(entity_id, body, position, velocity)
+            body, position, velocity, input, collidable, angle = data
+            self._mark_entity_updated(entity_id, body, position, velocity, angle)
 
     def do_update(self, entity_data: Dict[str, Tuple], world: b2World, dt: float) -> None:
         # flush contactlisteners
         world.Step(0, 0, 0)
         for entity_id, data in entity_data.items():
-            body, position, velocity, input, collidable = data
-            self._mark_entity_updated(entity_id, body, position, velocity)
+            body, position, velocity, input, collidable, angle = data
+            self._mark_entity_updated(entity_id, body, position, velocity, angle)
             if input:
                 self._handle_input(entity_id, body, input, collidable)
 
@@ -41,7 +42,13 @@ class PhysicsSystem(System):
         if input.jump and collidable and 'floor' in collidable.collides_with:
             body.body.ApplyLinearImpulse(b2Vec2(0, 25), body.body.position, True)
 
-    def _mark_entity_updated(self, entity_id: str, body: Box2DBody, position: Position, velocity: Velocity):
+    def _mark_entity_updated(
+            self,
+            entity_id: str,
+            body: Box2DBody,
+            position: Position,
+            velocity: Velocity,
+            angle: Angle):
         if not body.body.awake or body.body.type == BodyType.STATIC:
             return
 
@@ -49,6 +56,9 @@ class PhysicsSystem(System):
             self.context.mark_entity_updated(entity_id, Position)
         if velocity:
             self.context.mark_entity_updated(entity_id, Velocity)
+        if body and angle:
+            self.context.component(entity_id, Angle).angle = body.body.angle
+            self.context.mark_entity_updated(entity_id, Angle)
 
     def _create_world(self):
         world = b2World(gravity=(0, -10), doSleep=True)

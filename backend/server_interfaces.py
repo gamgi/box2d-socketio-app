@@ -80,6 +80,7 @@ class ShortEntityData(Interface):
     id: str
     position: Optional[List[float]] = None
     velocity: Optional[List[float]] = None
+    angle: Optional[float] = None
 
 
 @dataclass
@@ -89,6 +90,7 @@ class EntityData(Interface):
     velocity: Optional[List[float]] = None
     shape: Optional[Union[PolygonShapeData, ArcShapeData, RectShapeData]] = None
     color: Optional[int] = None
+    angle: Optional[float] = None
 
 
 @dataclass

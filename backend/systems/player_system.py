@@ -4,7 +4,7 @@ from ecs.base_system import System
 from ecs.context import Context
 from collections import defaultdict
 import client_interfaces as ci
-from components import Box2DBody, Box2DWorld, Position, Velocity, Collidable
+from components import Box2DBody, Box2DWorld, Position, Velocity, Collidable, Angle
 from components import Player, Match, Team, Input
 from constants import LEFT, RIGHT, UP
 
@@ -44,6 +44,7 @@ class PlayerSystem(System):
         velocity = Velocity.from_body(player_body)
         player = Player(color=int('0xff0000', 16))
         collidable = Collidable()
+        angle = Angle.Straight()
 
         self.context.upsert(
             entity_id,
@@ -51,7 +52,8 @@ class PlayerSystem(System):
             position,
             velocity,
             player,
-            collidable
+            collidable,
+            angle
         )
 
     def _remove_player(self, entity_id: str):

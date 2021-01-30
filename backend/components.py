@@ -40,6 +40,17 @@ class Velocity(Component):
 
 
 @dataclass
+class Angle(Component):
+    component_name = 'angle'
+    sync = Sync.SHORT
+    angle: float
+
+    @classmethod
+    def Straight(cls):
+        return cls(angle=0)
+
+
+@dataclass
 class Box2DWorld(Component):
     component_name = 'box2d_world'
     world: b2World
