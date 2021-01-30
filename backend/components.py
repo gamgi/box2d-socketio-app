@@ -75,6 +75,11 @@ class Collidable(Component):
 
 
 @dataclass
+class Ball(Component):
+    component_name = 'ball'
+
+
+@dataclass
 class Player(Component):
     component_name = 'player'
     color: int
