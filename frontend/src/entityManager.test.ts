@@ -3,7 +3,7 @@ import { EntityManager } from './entityManager';
 import { si } from './lib';
 
 describe('EntityManager', () => {
-  const mockPixi = { renderer: { render: jest.fn() } } as any;
+  const mockPixi = { renderer: { render: jest.fn(), generateTexture: jest.fn() } } as any;
   const mockStage = { addChild: jest.fn() } as any;
   const entityWithShape: Partial<si.EntityData> = {
     shape: {

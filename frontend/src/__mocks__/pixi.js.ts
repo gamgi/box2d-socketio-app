@@ -4,7 +4,18 @@ import { mocked } from 'ts-jest/utils';
 const ActualPIXI = jest.requireActual<typeof Pixi>('pixi.js');
 const MockedPIXI = jest.createMockFromModule<typeof Pixi>('pixi.js');
 
-export const { Graphics, Sprite, Texture, BaseTexture, utils, Rectangle, Text, TextStyle, RenderTexture } = ActualPIXI;
+export const {
+  Graphics,
+  Sprite,
+  Texture,
+  BaseTexture,
+  utils,
+  Rectangle,
+  Text,
+  TextStyle,
+  RenderTexture,
+  SCALE_MODES,
+} = ActualPIXI;
 export const { Container, TextMetrics, Loader } = MockedPIXI;
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-return
