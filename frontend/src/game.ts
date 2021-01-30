@@ -3,7 +3,7 @@ import { EntityManager } from './entityManager';
 import { si, Client } from './lib';
 import { METERS_TO_PX, Y_DIRECTION } from './constants';
 import { Vec2 } from './types';
-import { isPolygonShape } from './componentUtils';
+import { isArcShape, isPolygonShape } from './componentUtils';
 
 export class Game {
   public stage: Container = new Container();
@@ -72,6 +72,10 @@ function clientTransformVertex(vector: Vec2): Vec2 {
 function clientTransformShape(shape: si.EntityData['shape']): si.EntityData['shape'] {
   if (isPolygonShape(shape)) {
     shape.vertices = makeVerticesPositive(shape.vertices as Vec2[]).map(clientTransformVertex);
+    shape.x = shape.x * METERS_TO_PX;
+    shape.y = shape.y * METERS_TO_PX * Y_DIRECTION;
+  } else if (isArcShape(shape)) {
+    shape.radius *= METERS_TO_PX;
     shape.x = shape.x * METERS_TO_PX;
     shape.y = shape.y * METERS_TO_PX * Y_DIRECTION;
   }

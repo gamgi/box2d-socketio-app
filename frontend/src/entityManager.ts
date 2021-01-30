@@ -1,7 +1,7 @@
 import { Application, Container, Sprite, Graphics } from 'pixi.js';
 import { si } from './lib';
 import { renderGraphicToSprite } from './entityUtils';
-import { isPolygonShape } from './componentUtils';
+import { isPolygonShape, isArcShape } from './componentUtils';
 
 type ServerEntityData = Partial<si.EntityData & si.ShortEntityData>;
 type LocalEntityData = {
@@ -65,6 +65,19 @@ export class EntityManager {
       const graphic = new Graphics().beginFill(color).drawPolygon(shape.vertices.flat()).endFill();
       const sprite = renderGraphicToSprite(graphic, this.pixi);
       sprite.pivot.set(graphic.width / 2, graphic.height / 2);
+
+      entity.local.sprites = [sprite];
+      this.stage.addChild(sprite);
+      graphic.destroy();
+    } else if (isArcShape(shape)) {
+      this.removeEntitySprites(entity);
+
+      const graphic = new Graphics()
+        .beginFill(color)
+        .arc(shape.x + shape.radius, shape.y + shape.radius, shape.radius, shape.start_angle, shape.end_angle)
+        .endFill();
+      const sprite = renderGraphicToSprite(graphic, this.pixi);
+      sprite.pivot.set(shape.radius);
 
       entity.local.sprites = [sprite];
       this.stage.addChild(sprite);
