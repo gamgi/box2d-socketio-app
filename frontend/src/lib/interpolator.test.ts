@@ -63,5 +63,21 @@ describe('InterpolatedSprite', () => {
       );
       expect(evalSpline(sprite.interpolationSpline, 1)).toEqual([5 + 2 * 2, 5 + 3 * 2]);
     });
+
+    it('excess frames do extrapolate spline', () => {
+      sprite.recalculateInterpolation(
+        {
+          position: [5, 5],
+          velocity: [1, 1],
+        },
+        1,
+        10,
+        1,
+      );
+      sprite.interpolate(10);
+      expect([sprite.position.x, sprite.position.y]).toEqual([6, 6]);
+      sprite.interpolate(20);
+      expect([sprite.position.x, sprite.position.y]).toEqual([8, 8]);
+    });
   });
 });

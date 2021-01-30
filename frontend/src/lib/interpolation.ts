@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { Sprite, Texture } from 'pixi.js';
-import { si, Spline, createSpline, evalSpline, Vec2 } from '.';
+import { si, Spline, createLinear, createSpline, evalSpline, Vec2 } from '.';
 
 type InterpolationData = {
   position: Vec2;
@@ -16,7 +16,10 @@ function parseData(data: Partial<si.EntityData>): InterpolationData {
 
 export class InterpolatedSprite extends Sprite {
   public interpolationSpline: Spline;
+  public extrapolationLine: Spline;
   public _destroyed = false;
+  private interpolationFrame = 0;
+  private interpolationFrames = 1;
   private interpolationData: InterpolationData;
 
   constructor(texture: Texture, data: Partial<si.EntityData>) {
@@ -31,10 +34,17 @@ export class InterpolatedSprite extends Sprite {
       c: [0, 0],
       d: this.interpolationData.position,
     };
+    this.extrapolationLine = createLinear(this.interpolationData.position, [0, 0], 0);
   }
 
-  public interpolate(): void {
-    const [x, y] = evalSpline(this.interpolationSpline, 0);
+  public interpolate(frames: number): void {
+    this.interpolationFrame += frames;
+    const t = this.interpolationFrame / this.interpolationFrames;
+
+    const [x, y] =
+      t <= 1
+        ? evalSpline(this.interpolationSpline, t) // interpolate
+        : evalSpline(this.extrapolationLine, t - 1); // extrapolate
     this.position.set(x, y);
   }
 
@@ -58,7 +68,10 @@ export class InterpolatedSprite extends Sprite {
       serverDeltaTime,
       vc,
     );
+    this.extrapolationLine = createLinear(newData.position, newData.velocity, serverDeltaTime, vc);
 
     this.interpolationData = newData;
+    this.interpolationFrame = 0;
+    this.interpolationFrames = localDeltaFrames;
   }
 }
