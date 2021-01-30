@@ -37,6 +37,10 @@ export class EntityManager {
     if (update?.position) {
       this.updateEntityPosition(entity, update.position);
     }
+
+    if (update?.angle) {
+      this.updateEntityAngle(entity, update.angle);
+    }
   }
 
   public removeEntity(id: string): void {
@@ -83,6 +87,12 @@ export class EntityManager {
       this.stage.addChild(sprite);
       graphic.destroy();
     }
+  }
+
+  private updateEntityAngle(entity: Entity, angle: number) {
+    entity.local.sprites.forEach((sprite) => {
+      sprite.rotation = -angle;
+    });
   }
 
   private updateEntityPosition(entity: Entity, position: si.EntityData['position']) {
