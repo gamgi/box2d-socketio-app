@@ -64,6 +64,7 @@ export class EntityManager {
 
       const graphic = new Graphics().beginFill(color).drawPolygon(shape.vertices.flat()).endFill();
       const sprite = renderGraphicToSprite(graphic, this.pixi);
+      sprite.pivot.set(graphic.width / 2, graphic.height / 2);
 
       entity.local.sprites = [sprite];
       this.stage.addChild(sprite);

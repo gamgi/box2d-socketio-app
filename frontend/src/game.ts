@@ -65,11 +65,24 @@ function clientTransformPosition(vector: Vec2): Vec2 {
   return [vector[0] * METERS_TO_PX, vector[1] * METERS_TO_PX * Y_DIRECTION];
 }
 
+function clientTransformVertex(vector: Vec2): Vec2 {
+  return [vector[0] * METERS_TO_PX, vector[1] * METERS_TO_PX];
+}
+
 function clientTransformShape(shape: si.EntityData['shape']): si.EntityData['shape'] {
   if (isPolygonShape(shape)) {
-    shape.vertices = (shape.vertices as Vec2[]).map(clientTransformPosition);
+    shape.vertices = makeVerticesPositive(shape.vertices as Vec2[]).map(clientTransformVertex);
     shape.x = shape.x * METERS_TO_PX;
     shape.y = shape.y * METERS_TO_PX * Y_DIRECTION;
   }
   return shape;
+}
+
+function makeVerticesPositive(vertices: Vec2[]) {
+  // Offset vertices so that there are no negative vertices
+  // We do this because renderer.generateTexture
+  // can't handle negative coordinates for graphic
+  const xMin = Math.min(0, ...vertices.flatMap((v) => v[0]));
+  const yMin = Math.min(0, ...vertices.flatMap((v) => v[1]));
+  return vertices.map((vec) => [vec[0] - xMin, vec[1] - yMin]);
 }
