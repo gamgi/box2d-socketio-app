@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { Application, Sprite } from 'pixi.js';
-import { Spline, createLinear, createSpline, evalSpline, Vec2 } from '.';
+import { si, RingBuffer, Spline, createLinear, createSpline, evalSpline, Vec2 } from '.';
 
 export type InterpolationData = {
   position: Vec2;
@@ -73,12 +73,17 @@ export class InterpolatedSprite {
 }
 
 export class Interpolator {
+  private packetFrameDelayBuffer: RingBuffer = new RingBuffer(5, 1);
+  private packetDelayBuffer: RingBuffer = new RingBuffer(5, 1);
   private tLastUpdate;
+  public packetFrameDelay = 1;
+  public packetDelay = 0;
   private elapsedFrames = 0;
   private sprites: InterpolatedSprite[] = [];
 
   constructor(pixi: Application) {
     this.tLastUpdate = performance.now();
+    pixi.ticker.maxFPS = 30;
     pixi.ticker.add(() => {
       this.elapsedFrames++;
       this.sprites = this.sprites.filter((sprite) => !isDestroyed(sprite.sprite));
@@ -87,12 +92,16 @@ export class Interpolator {
   }
 
   public getInterpolationData(): { serverDeltaTime: number; localDeltaFrames: number } {
-    return { serverDeltaTime: 0.5, localDeltaFrames: 2 };
+    return { serverDeltaTime: this.packetDelay, localDeltaFrames: this.packetFrameDelay };
   }
 
   public onReceiveData(): void {
+    this.packetFrameDelayBuffer.push(this.elapsedFrames);
+    this.packetFrameDelay = Math.ceil(this.packetFrameDelayBuffer.mean());
     this.elapsedFrames = 0;
 
+    this.packetDelayBuffer.push(performance.now() - this.tLastUpdate);
+    this.packetDelay = this.packetDelayBuffer.mean() / 1000;
     this.tLastUpdate = performance.now();
   }
 

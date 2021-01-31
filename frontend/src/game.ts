@@ -33,6 +33,7 @@ export class Game {
 
   private initClient(): void {
     this.client.eventEmitter.on('long_sync', (data: si.LongSyncDTO) => {
+      this.entityManager.onReceiveData();
       for (const update of data.updates) {
         this.clientTransformUpdateInplace(update);
         this.entityManager.updateEntity(update.id, update);
@@ -41,6 +42,7 @@ export class Game {
     });
 
     this.client.eventEmitter.on('short_sync', (data: si.ShortSyncDTO) => {
+      this.entityManager.onReceiveData();
       for (const update of data.updates) {
         this.clientTransformUpdateInplace(update);
         this.entityManager.updateEntityShort(update.id, update);
