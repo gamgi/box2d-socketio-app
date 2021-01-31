@@ -9,13 +9,12 @@ export type InterpolationData = {
 
 const isDestroyed = (sprite: Sprite): boolean => {
   // eslint-disable-next-line no-underscore-dangle
-  return ((sprite as unknown) as Record<'_destroyed', boolean>)._destroyed;
+  return ((sprite as unknown) as Record<'_destroyed', boolean>)._destroyed === true;
 };
 
 export class InterpolatedSprite {
   public interpolationSpline: Spline;
   public extrapolationLine: Spline;
-  public _destroyed = false;
   private interpolationFrame = 0;
   private interpolationFrames = 1;
   private interpolationData: InterpolationData;
@@ -37,7 +36,9 @@ export class InterpolatedSprite {
   public interpolate(frames: number): void {
     this.interpolationFrame += frames;
     const t = this.interpolationFrame / this.interpolationFrames;
-
+    if (t > 1) {
+      return;
+    }
     const [x, y] =
       t <= 1
         ? evalSpline(this.interpolationSpline, t) // interpolate
@@ -45,26 +46,19 @@ export class InterpolatedSprite {
     this.sprite.position.set(x, y);
   }
 
-  public recalculateInterpolation(
-    newData: InterpolationData,
-    serverDeltaTime: number,
-    localDeltaFrames: number,
-    velocityCorrection?: number,
-  ): void {
-    const vc = velocityCorrection ?? 0.5 * serverDeltaTime;
-
+  public recalculateInterpolation(newData: InterpolationData, serverDeltaTime: number, localDeltaFrames: number): void {
     const oldData = this.interpolationData;
     const oldPos: Vec2 = [this.sprite.position.x, this.sprite.position.y];
 
     this.interpolationSpline = createSpline(
       oldPos,
-      oldData.velocity,
+      [0, 0],
       newData.position,
-      newData.velocity,
+      // TODO end velocity
+      [0, 0],
       serverDeltaTime,
-      vc,
     );
-    this.extrapolationLine = createLinear(newData.position, newData.velocity, serverDeltaTime, vc);
+    this.extrapolationLine = createLinear(newData.position, newData.velocity, serverDeltaTime);
 
     this.interpolationData = newData;
     this.interpolationFrame = 0;

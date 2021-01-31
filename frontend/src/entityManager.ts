@@ -7,15 +7,6 @@ type ServerEntityData = Partial<si.EntityData & si.ShortEntityData>;
 type LocalEntityData = {
   sprites: Sprite[];
   interpolated?: InterpolatedSprite;
-  // interpolated?: InterpolationData;
-  // interpolated?: {
-  //   position?: Vec2;
-  //   velocity?: Vec2;
-  //   interpolationSpline: Spline;
-  //   extrapolationLine: Spline;
-  //   // position: number[] | null;
-  //   // velocity: number[] | null;
-  // };
 };
 type Entity = {
   server: ServerEntityData;
@@ -109,10 +100,6 @@ export class EntityManager {
         .arc(shape.x + shape.radius, shape.y + shape.radius, shape.radius, shape.start_angle, shape.end_angle)
         .endFill();
       const sprite = renderGraphicToSprite(graphic, this.pixi);
-      entity.local.interpolated = this.interpolator.new(sprite, {
-        position: (entity?.server?.position ?? [0, 0]) as Vec2,
-        velocity: (entity?.server?.velocity ?? [0, 0]) as Vec2,
-      });
       sprite.pivot.set(shape.radius);
 
       entity.local.sprites = [sprite];
@@ -137,7 +124,11 @@ export class EntityManager {
   }
 
   private initializeEntityInterpolation(entity: Entity, sprites: Sprite[], position: Vec2, velocity: Vec2) {
-    entity.local.interpolated = new InterpolatedSprite(sprites[0], { position, velocity });
+    if (!entity.local.interpolated) {
+      entity.local.interpolated = this.interpolator.new(sprites[0], { position, velocity });
+    } else {
+      entity.local.interpolated.sprite = sprites[0];
+    }
   }
 
   private updateEntityInterpolation(entity: Entity, position: Vec2, velocity: Vec2) {
@@ -145,6 +136,7 @@ export class EntityManager {
       return;
     }
 
-    entity.local.interpolated.recalculateInterpolation({ position, velocity }, 1, 1);
+    const { serverDeltaTime, localDeltaFrames } = this.interpolator.getInterpolationData();
+    entity.local.interpolated.recalculateInterpolation({ position, velocity }, serverDeltaTime, localDeltaFrames);
   }
 }

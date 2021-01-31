@@ -56,6 +56,11 @@ export class Game {
     if (update?.position) {
       update.position = clientTransformPosition(update.position as Vec2);
     }
+
+    if (update?.velocity) {
+      update.velocity = clientTransformVelocity(update.velocity as Vec2);
+    }
+
     if (update?.shape) {
       update.shape = clientTransformShape(update.shape);
     }
@@ -67,6 +72,10 @@ export class Game {
 }
 
 function clientTransformPosition(vector: Vec2): Vec2 {
+  return [vector[0] * METERS_TO_PX, vector[1] * METERS_TO_PX * Y_DIRECTION];
+}
+
+function clientTransformVelocity(vector: Vec2): Vec2 {
   return [vector[0] * METERS_TO_PX, vector[1] * METERS_TO_PX * Y_DIRECTION];
 }
 
