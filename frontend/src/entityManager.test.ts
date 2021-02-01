@@ -3,7 +3,10 @@ import { EntityManager } from './entityManager';
 import { si } from './lib';
 
 describe('EntityManager', () => {
-  const mockPixi = { renderer: { render: jest.fn(), generateTexture: jest.fn() } } as any;
+  const mockPixi = {
+    renderer: { render: jest.fn(), generateTexture: jest.fn() },
+    ticker: { add: jest.fn() },
+  } as any;
   const mockStage = { addChild: jest.fn() } as any;
   const entityWithShape: Partial<si.EntityData> = {
     shape: {
@@ -17,7 +20,7 @@ describe('EntityManager', () => {
   };
 
   it('updateEntity creates new entity if not found', () => {
-    const manager = new EntityManager(jest.fn() as any, jest.fn() as any);
+    const manager = new EntityManager(mockPixi, jest.fn() as any);
     const entityData = { id: '0', position: [0, 1], velocity: [2, 3] };
     manager.updateEntity('0', entityData);
 
@@ -28,7 +31,7 @@ describe('EntityManager', () => {
   });
 
   it('updateEntity updates entity server data', () => {
-    const manager = new EntityManager(jest.fn() as any, jest.fn() as any);
+    const manager = new EntityManager(mockPixi, jest.fn() as any);
     const entityData = { id: '0', position: [0, 1], velocity: [2, 3] };
     manager.updateEntity('0', entityData);
     manager.updateEntity('0', { velocity: [4, 5] });

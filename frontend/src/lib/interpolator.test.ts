@@ -33,7 +33,6 @@ describe('InterpolatedSprite', () => {
         },
         1,
         1,
-        1,
       );
       expect([interpolated.sprite.position.x, interpolated.sprite.position.y]).toEqual([1, 2]);
       expect(evalSpline(interpolated.interpolationSpline, 0)).toEqual([1, 2]);
@@ -45,7 +44,6 @@ describe('InterpolatedSprite', () => {
           position: [5, 5],
           velocity: [0, 0],
         },
-        1,
         1,
         1,
       );
@@ -60,7 +58,6 @@ describe('InterpolatedSprite', () => {
         },
         2,
         1,
-        1,
       );
       expect(evalSpline(interpolated.interpolationSpline, 1)).toEqual([5 + 2 * 2, 5 + 3 * 2]);
     });
@@ -73,7 +70,6 @@ describe('InterpolatedSprite', () => {
         },
         1,
         10,
-        1,
       );
       interpolated.interpolate(10);
       expect([interpolated.sprite.position.x, interpolated.sprite.position.y]).toEqual([6, 6]);

@@ -46,7 +46,7 @@ describe('evalSpline and createSpline', () => {
     expect(evalSpline(spline, 1)).toEqual(endPosition);
   });
 
-  it('estimates ends position based on enbd velocity and lapsed frames', () => {
+  it('estimates ends position based on end velocity and lapsed frames', () => {
     const startPosition: Vec2 = [1, 1];
     const endPosition: Vec2 = [4, 4];
     const startVelocity: Vec2 = [0, 0];
