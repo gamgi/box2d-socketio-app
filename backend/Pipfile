@@ -18,6 +18,7 @@ eventlet = "*"
 python-socketio = "*"
 box2d = "*"
 dataclass-factory = "*"
+typing_extensions = "*"
 
 [requires]
 python_version = "3.8"
