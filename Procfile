@@ -1,1 +1,1 @@
-web: (cd backend/ && gunicorn -k eventlet main:main)
+web: (cd backend/ && python main.py)

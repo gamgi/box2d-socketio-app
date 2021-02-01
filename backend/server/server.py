@@ -1,3 +1,4 @@
+import os
 from ecs.base_system import ExternalEvent
 from typing import Union, Dict, Callable, Optional
 from time import time
@@ -12,6 +13,7 @@ from game.game import Game
 logging.basicConfig(level=logging.INFO)
 
 TICKS_PER_SECOND = 5
+PORT = int(os.environ.get("PORT", 5000))
 
 
 class Server(socketio.Namespace):
@@ -55,7 +57,7 @@ class Server(socketio.Namespace):
 
         shutdown_flag = threading.Event()
         sio.start_background_task(server.sync, shutdown_flag, TICKS_PER_SECOND, True)
-        eventlet.wsgi.server(eventlet.listen(('', 5000)), app, log_output=False)
+        eventlet.wsgi.server(eventlet.listen(('', PORT)), app, log_output=False)
         logging.info('Shutting down')
         shutdown_flag.set()
 
