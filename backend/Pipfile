@@ -10,10 +10,10 @@ flake8 = "*"
 mypy = "*"
 pytest = "*"
 pytest-watch = "*"
-py-ts-interfaces = "*"
 watchgod = "*"
 
 [packages]
+py-ts-interfaces = "*"
 eventlet = "*"
 python-socketio = "*"
 box2d = "*"
