@@ -1,1 +1,1 @@
-web: (cd backend/ && pipenv run start --log-file=-)
+web: (cd backend/ && python main.py)

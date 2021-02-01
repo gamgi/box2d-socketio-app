@@ -4,7 +4,7 @@ import { ci, si } from './index';
 import { ConnectionFailedError, ConnectionClosedError } from './clientErrors';
 import { ServerError } from './serverErrors';
 
-type ClientOptions = {
+export type ClientOptions = {
   url: string;
 } & Partial<SocketOptions & ManagerOptions>;
 

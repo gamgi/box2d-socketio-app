@@ -1,11 +1,12 @@
 import { Application } from 'pixi.js';
 import { Client, Keyboard } from './lib';
-import { HOST } from './constants';
+import { getClientConfig } from './apiConfig';
 import { App } from './app';
 import { Game } from './game';
 
 async function init(pixi: Application) {
-  const client = new Client({ url: HOST });
+  const clientConfig = getClientConfig();
+  const client = new Client(clientConfig);
   const keyboard = new Keyboard();
   const game = new Game(pixi, client);
   const app = new App(pixi, client, keyboard, game);
