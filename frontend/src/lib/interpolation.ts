@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { Application, Sprite } from 'pixi.js';
-import { si, RingBuffer, Spline, createLinear, createSpline, evalSpline, Vec2 } from '.';
+import { RingBuffer, Spline, createLinear, createSpline, evalSpline, Vec2 } from '.';
 
 export type InterpolationData = {
   position: Vec2;
@@ -36,9 +36,7 @@ export class InterpolatedSprite {
   public interpolate(frames: number): void {
     this.interpolationFrame += frames;
     const t = this.interpolationFrame / this.interpolationFrames;
-    if (t > 1) {
-      return;
-    }
+
     const [x, y] =
       t <= 1
         ? evalSpline(this.interpolationSpline, t) // interpolate
@@ -49,16 +47,13 @@ export class InterpolatedSprite {
   public recalculateInterpolation(newData: InterpolationData, serverDeltaTime: number, localDeltaFrames: number): void {
     const oldData = this.interpolationData;
     const oldPos: Vec2 = [this.sprite.position.x, this.sprite.position.y];
+    const oldVelocity: Vec2 = oldData.velocity;
+    const newVelocity: Vec2 = newData.velocity;
+    // TODO check spline equations, since this correction constant is odd
+    const vc = serverDeltaTime / 2;
 
-    this.interpolationSpline = createSpline(
-      oldPos,
-      [0, 0],
-      newData.position,
-      // TODO end velocity
-      [0, 0],
-      serverDeltaTime,
-    );
-    this.extrapolationLine = createLinear(newData.position, newData.velocity, serverDeltaTime);
+    this.interpolationSpline = createSpline(oldPos, oldVelocity, newData.position, newVelocity, serverDeltaTime, vc);
+    this.extrapolationLine = createLinear(newData.position, newVelocity, serverDeltaTime, vc);
 
     this.interpolationData = newData;
     this.interpolationFrame = 0;
@@ -77,7 +72,6 @@ export class Interpolator {
 
   constructor(pixi: Application) {
     this.tLastUpdate = performance.now();
-    pixi.ticker.maxFPS = 30;
     pixi.ticker.add(() => {
       this.elapsedFrames++;
       this.sprites = this.sprites.filter((sprite) => !isDestroyed(sprite.sprite));

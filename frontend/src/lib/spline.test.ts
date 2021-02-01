@@ -20,16 +20,16 @@ describe('createSpline', () => {
 
 describe('evalSpline', () => {
   it('evaluates trivial spline t=0 as start position', () => {
-    const startPosition = [1, 1];
+    const startPosition: Vec2 = [1, 1];
     const spline: Spline = { a: [0, 0], b: [0, 0], c: [0, 0], d: startPosition };
 
     expect(evalSpline(spline, 0)).toEqual(startPosition);
   });
 
   it('evaluates trivial spline t=1 as end position', () => {
-    const startPosition = [1, 1];
-    const endPosition = [2, 2];
-    const a = [endPosition[0] - startPosition[0], endPosition[1] - startPosition[1]];
+    const startPosition: Vec2 = [1, 1];
+    const endPosition: Vec2 = [2, 2];
+    const a: Vec2 = [endPosition[0] - startPosition[0], endPosition[1] - startPosition[1]];
     const spline: Spline = { a, b: [0, 0], c: [0, 0], d: startPosition };
 
     expect(evalSpline(spline, 1)).toEqual(endPosition);

@@ -30,8 +30,8 @@ export function createSpline(
   const c1 = oldPosition; // current position with old data
   const c2 = [
     // new position with old data
-    oldPosition[0] + oldVelocity[0] * vc,
-    oldPosition[1] + oldVelocity[1] * vc,
+    oldPosition[0] + oldVelocity[0] * t * vc,
+    oldPosition[1] + oldVelocity[1] * t * vc,
   ];
   const c4 = [
     // new position with new data
@@ -40,8 +40,8 @@ export function createSpline(
   ];
   const c3 = [
     // current position with new data
-    c4[0] - newVelocity[0] * t * vc,
-    c4[1] - newVelocity[1] * t * vc,
+    newPosition[0],
+    newPosition[1],
   ];
   // spline constants
   const a: Vec2 = [
