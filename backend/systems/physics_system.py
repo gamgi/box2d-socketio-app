@@ -39,6 +39,10 @@ class PhysicsSystem(System):
             body.body.ApplyForceToCenter(b2Vec2(5, 0), True)
         if input.move_left:
             body.body.ApplyForceToCenter(b2Vec2(-5, 0), True)
+
+        # limit x-velocity
+        body.body.linearVelocity.x = max(-2, min(body.body.linearVelocity.x, 2))
+
         if input.jump and collidable and 'floor' in collidable.collides_with:
             body.body.ApplyLinearImpulse(b2Vec2(0, 3), body.body.position, True)
 

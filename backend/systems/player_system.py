@@ -7,9 +7,11 @@ import client_interfaces as ci
 from components import Box2DBody, Box2DWorld, Position, Velocity, Collidable, Angle
 from components import Player, Match, Team, Input
 from constants import LEFT, RIGHT, UP
+from random import random
 
 
 class PlayerSystem(System):
+
     def __init__(self, context: Context):
         self.context = context
 
@@ -36,8 +38,13 @@ class PlayerSystem(System):
     def _spawn_player(self, entity_id: str):
         world = self._get_world()
 
-        player_body = world.CreateDynamicBody(position=(0, 0))
-        player_body.CreatePolygonFixture(box=(1, 1), density=1, friction=0.3)
+        player_body = world.CreateDynamicBody(position=(1, 0))
+
+        # random shape
+        if random() > 0.5:
+            player_body.CreatePolygonFixture(box=(0.5, 0.5), density=0.5, friction=0.3, restitution=0)
+        else:
+            player_body.CreateCircleFixture(radius=0.5, density=0.5, friction=0.3, restitution=0)
         body = Box2DBody(player_body)
 
         position = Position.from_body(player_body)
@@ -61,6 +68,7 @@ class PlayerSystem(System):
         body = self.context.component(entity_id, Box2DBody)
         if body:
             world.DestroyBody(body.body)  # type:ignore
+            logging.info(f'removed body for {entity_id}')
 
     def _assign_team(self, entity_id: str):
         teams = self._get_teams_player_count()

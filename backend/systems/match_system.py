@@ -21,8 +21,8 @@ class MatchSystem(System):
     def _spawn_ball(self, entity_id: str):
         world = self._get_world()
 
-        ball_body = world.CreateDynamicBody(position=(2, 0))
-        ball_body.CreateCircleFixture(radius=0.5, density=0.5, friction=0.5, restitution=0.5)
+        ball_body = world.CreateDynamicBody(position=(3, 0))
+        ball_body.CreateCircleFixture(radius=0.5, density=0.5, friction=0.5)
         body = Box2DBody(ball_body)
         collidable = Collidable()
 
