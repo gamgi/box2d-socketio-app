@@ -31,9 +31,10 @@ class Server(socketio.Namespace):
         room = self.game._create_room(ci.CreateRoomDTO(name, False))
         self.game.trigger_event(ExternalEvent.GAME_INIT, room.id, room)
 
-    def sync(self, shutdown_flag: threading.Event, ticks_per_second):
+    def sync(self, shutdown_flag: threading.Event, ticks_per_second, debug=False):
         frame = 0
-        self._init_debug_room('debug room')
+        if debug:
+            self._init_debug_room('debug room')
 
         while not shutdown_flag.is_set():
             self.tick(frame == 0)
@@ -53,7 +54,7 @@ class Server(socketio.Namespace):
         sio.register_namespace(server)
 
         shutdown_flag = threading.Event()
-        sio.start_background_task(server.sync, shutdown_flag, TICKS_PER_SECOND)
+        sio.start_background_task(server.sync, shutdown_flag, TICKS_PER_SECOND, True)
         eventlet.wsgi.server(eventlet.listen(('', 5000)), app, log_output=False)
         logging.info('Shutting down')
         shutdown_flag.set()

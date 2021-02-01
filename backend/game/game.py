@@ -98,7 +98,6 @@ class Game:
 
     def update_long(self, callback_emit: Callable, sort: bool = False):
         for room_id, context in self.contexts.items():
-            print(set.union(*context.entities.values()))
             self.trigger_event(ExternalEvent.UPDATE, room_id)
 
             updates = serializer.create_long_sync(context, sort)

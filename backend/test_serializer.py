@@ -17,6 +17,7 @@ class TestSerializerShort:
             'id': '0',
             'position': None,
             'velocity': None,
+            'angle': None,
         }
 
     def test_short_sync_data_returns_updated(self, context):
@@ -29,6 +30,7 @@ class TestSerializerShort:
             'id': '0',
             'position': b2Vec2(0, 0),
             'velocity': b2Vec2(0, 0),
+            'angle': None,
         }
 
     def test_create_short_sync(self, context):
@@ -63,7 +65,8 @@ class TestSerializerLong:
             'position': b2Vec2(0, 0),
             'velocity': b2Vec2(0, 0),
             'shape': None,
-            'color': None
+            'color': None,
+            'angle': None,
         }
 
     def test_long_sync_data_serializes_shape(self, context):

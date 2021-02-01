@@ -3,6 +3,7 @@ from Box2D import b2CircleShape
 from systems.physics_system import PhysicsSystem
 from unittest.mock import patch, Mock, call
 from components import Box2DWorld, Box2DBody, Position, Velocity
+from constants import BOX2D_POS_ITERS, BOX2D_VEL_ITERS
 
 
 @pytest.fixture
@@ -27,7 +28,7 @@ class TestPhysicsSystem:
             system.on_update_frame(1)
         world.Step.assert_has_calls([
             call(0, 0, 0),  # flush contactlisteners
-            call(1, 6, 2),  # actual update
+            call(1, BOX2D_VEL_ITERS, BOX2D_POS_ITERS),  # actual update
         ])
 
     def test_on_update_frame_marks_all_awake_entities_updated(self, system, context):
@@ -60,8 +61,10 @@ class TestPhysicsSystem:
                        Position.from_body(body),
                        Velocity.from_body(body)
                        )
+        assert context.component('0', Box2DBody).body.position == (0, 0)
+        assert context.component('0', Position).position == (0, 0)
 
         system.on_update_frame(1.0)
 
-        assert context.component('0', Box2DBody).body.position == (0, -2)
-        assert context.component('0', Position).position == (0, -2)
+        assert context.component('0', Box2DBody).body.position != (0, 0)
+        assert context.component('0', Position).position != (0, 0)

@@ -84,19 +84,26 @@ class TestServerE2E:
         sio.emit.assert_has_calls(
             [
                 call('long_sync', si.LongSyncDTO(updates=[
-                    si.EntityData(
-                        id='player1',
-                        position=b2Vec2(0, 0),
-                        velocity=b2Vec2(0, 0),
-                        shape=ANY,
-                        color=ANY,
-                        angle=0),
-                    si.EntityData(
-                        id='player2',
-                        position=b2Vec2(0, 0),
-                        velocity=b2Vec2(0, 0),
-                        shape=ANY,
-                        color=ANY,
-                        angle=0),
-                ], remove=[]), 'room0')
+                     si.EntityData(
+                         id='ball',
+                         position=b2Vec2(3, 0),
+                         velocity=b2Vec2(0, 0),
+                         shape=ANY,
+                         color=None,
+                         angle=None),
+                     si.EntityData(
+                         id='player1',
+                         position=b2Vec2(1, 0),
+                         velocity=b2Vec2(0, 0),
+                         shape=ANY,
+                         color=ANY,
+                         angle=0),
+                     si.EntityData(
+                         id='player2',
+                         position=b2Vec2(1, 0),
+                         velocity=b2Vec2(0, 0),
+                         shape=ANY,
+                         color=ANY,
+                         angle=0),
+                     ], remove=[]), 'room0')
             ], any_order=True)

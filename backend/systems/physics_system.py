@@ -61,7 +61,7 @@ class PhysicsSystem(System):
         if velocity:
             self.context.mark_entity_updated(entity_id, Velocity)
         if body and angle:
-            self.context.component(entity_id, Angle).angle = body.body.angle
+            self.context.component(entity_id, Angle).angle = body.body.angle  # type:ignore
             self.context.mark_entity_updated(entity_id, Angle)
 
     def _create_world(self):

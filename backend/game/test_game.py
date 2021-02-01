@@ -74,7 +74,7 @@ class TestGame:
         game = Game([], dict)
 
         with pytest.raises(GameError, match='Room does not exist'):
-            game.join_room(self.sid, ci.JoinRoomDTO(room_id='nonexistent'), Mock())
+            game.join_room(self.sid, ci.JoinRoomDTO(room_id='nonexistent'), Mock(), Mock())
 
     def test_create_room_twice_raises(self):
         game = Game([], dict)
@@ -90,7 +90,7 @@ class TestGame:
 
         game.create_room(self.sid, ci.CreateRoomDTO(name='my room 2', private=False), Mock())
         with pytest.raises(GameError, match='You are already in a room'):
-            game.join_room(self.sid, ci.JoinRoomDTO(room_id=room_id), Mock())
+            game.join_room(self.sid, ci.JoinRoomDTO(room_id=room_id), Mock(), Mock())
 
     def test_trigger_event(self):
         mock_system = Mock(spec=['on_update'], name='system')
