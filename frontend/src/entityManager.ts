@@ -1,5 +1,6 @@
-import { Application, Container, Sprite, Graphics, SCALE_MODES } from 'pixi.js';
-import { si, Interpolator, Vec2, Spline, InterpolationData, InterpolatedSprite } from './lib';
+import { Application, Container, Sprite, Graphics } from 'pixi.js';
+import { si, Interpolator, Vec2, InterpolatedSprite } from './lib';
+import { coalesceVec2 } from './vectorUtils';
 import { renderGraphicToSprite } from './entityUtils';
 import { isPolygonShape, isArcShape } from './componentUtils';
 
@@ -46,14 +47,14 @@ export class EntityManager {
       this.initializeEntityInterpolation(
         entity,
         entity.local.sprites,
-        (update?.position ?? entity?.server?.position ?? [0, 0]) as Vec2,
-        (update?.velocity ?? entity?.server?.velocity ?? [0, 0]) as Vec2,
+        coalesceVec2(update?.position, entity?.server?.position),
+        coalesceVec2(update?.velocity, entity?.server?.velocity),
       );
     } else if (update?.position && entity.local.interpolated) {
       this.updateEntityInterpolation(
         entity,
-        (update?.position ?? entity?.server?.position ?? [0, 0]) as Vec2,
-        (update?.velocity ?? entity?.server?.velocity ?? [0, 0]) as Vec2,
+        coalesceVec2(update?.position, entity?.server?.position),
+        coalesceVec2(update?.velocity, entity?.server?.velocity),
       );
     }
 
