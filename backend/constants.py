@@ -7,8 +7,8 @@ RIGHT = 'ArrowRight'
 UP = 'ArrowUp'
 
 
-BOX2D_VEL_ITERS = 6
-BOX2D_POS_ITERS = 2
+BOX2D_VEL_ITERS = 25
+BOX2D_POS_ITERS = 50
 
 
 class BodyType(int, Enum):

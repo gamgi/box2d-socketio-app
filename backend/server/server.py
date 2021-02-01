@@ -10,7 +10,7 @@ from server.decorators import returns_error_dto
 from game.game import Game
 logging.basicConfig(level=logging.INFO)
 
-TICKS_PER_SECOND = 2
+TICKS_PER_SECOND = 5
 
 
 class Server(socketio.Namespace):
@@ -48,7 +48,7 @@ class Server(socketio.Namespace):
         shutdown_flag = threading.Event()
         sio.start_background_task(server.sync, shutdown_flag, TICKS_PER_SECOND)
         eventlet.wsgi.server(eventlet.listen(('', 5000)), app, log_output=False)
-
+        logging.info('Shutting down')
         shutdown_flag.set()
 
     def on_connect(self, sid, environ):

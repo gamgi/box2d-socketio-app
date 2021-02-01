@@ -1,3 +1,4 @@
+import logging
 from typing import List, Dict, Type, Set, Callable
 from ecs.base_system import System, ExternalEvent
 from ecs.context import Context
@@ -34,6 +35,7 @@ class Game:
             raise GameError('You are already in a room', 400)
 
         room.players.append(sid)
+        logging.info(f'{sid} joined {room.id}')
         callback_enter_room(room.id)
         self.trigger_event(ExternalEvent.PLAYER_JOIN, room.id, sid)
         self.sync_full(room.id, sid, callback_emit)

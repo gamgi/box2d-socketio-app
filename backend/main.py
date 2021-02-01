@@ -11,6 +11,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main():
+    logging.info('server started')
     eventlet.monkey_patch()
     sio = socketio.Server(json=custom_json, cors_allowed_origins=['*', 'http://localhost:9000'])
     try:
