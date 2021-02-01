@@ -7,3 +7,5 @@ export * from './spline';
 export * from './types';
 export { Keyboard, Key } from './keyboard';
 export * from './resources';
+export * from './ringBuffer';
+export * from './interpolation';

@@ -55,6 +55,7 @@ export interface ShortEntityData {
   id: string;
   position: Array<number> | null;
   velocity: Array<number> | null;
+  angle: number | null;
 }
 
 export interface EntityData {
@@ -63,6 +64,7 @@ export interface EntityData {
   velocity: Array<number> | null;
   shape: PolygonShapeData | ArcShapeData | RectShapeData | null;
   color: number | null;
+  angle: number | null;
 }
 
 export interface ShortSyncDTO {
