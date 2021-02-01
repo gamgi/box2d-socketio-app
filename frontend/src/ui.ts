@@ -18,6 +18,8 @@ export class Ui {
   private notification = new Graphics();
   private textStyle: TextStyle;
   private screen: { width: number; height: number };
+  private debug = new Graphics();
+  private debugData: Record<string, string> = {};
 
   constructor(private pixi: Application) {
     pixi.stage.addChild(this.stage);
@@ -54,5 +56,20 @@ export class Ui {
     text.position.set(center.x, center.y);
     this.notification.addChild(text);
     this.stage.addChild(this.notification);
+  }
+
+  public updateDebugVariable(name: string, value: string): void {
+    if (this.debug.children.length === 0) {
+      const text = new Text(JSON.stringify(this.debugData, null, 2), {
+        ...this.textStyle,
+        fill: 0xffffff,
+        fontSize: 20,
+      });
+      this.debug.addChild(text);
+      this.stage.addChild(this.debug);
+    } else {
+      this.debugData[name] = value;
+      (this.debug.children[0] as Text).text = JSON.stringify(this.debugData, null, 2);
+    }
   }
 }

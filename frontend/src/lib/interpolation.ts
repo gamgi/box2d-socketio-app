@@ -1,6 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import { Application, Sprite } from 'pixi.js';
 import { RingBuffer, Spline, createLinear, createSpline, evalSpline, Vec2 } from '.';
+import { Debugger } from '../debug';
 
 export type InterpolationData = {
   position: Vec2;
@@ -91,6 +92,9 @@ export class Interpolator {
     this.packetDelayBuffer.push(performance.now() - this.tLastUpdate);
     this.packetDelay = this.packetDelayBuffer.mean() / 1000;
     this.tLastUpdate = performance.now();
+
+    Debugger.updateDebugVariable('packetDelay', this.packetDelay.toFixed(4).toString());
+    Debugger.updateDebugVariable('packetFrameDelay', Math.round(this.packetFrameDelay).toString());
   }
 
   public new(sprite: Sprite, data: InterpolationData): InterpolatedSprite {

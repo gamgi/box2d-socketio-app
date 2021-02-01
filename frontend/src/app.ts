@@ -3,6 +3,7 @@ import { ci, Client, ClientError, loadResources, ServerError } from './lib';
 import { Keyboard, Key, KeyboardContext } from './lib/keyboard';
 import { Game } from './game';
 import { Ui, MessageLevel } from './ui';
+import { Debugger } from './debug';
 import { RESOURCES } from './constants';
 
 export class App {
@@ -17,6 +18,7 @@ export class App {
     this.keyboard = keyboard;
     this.game = game;
     this.ui = new Ui(app);
+    Debugger.init(this.ui);
   }
 
   public async init(): Promise<void> {
