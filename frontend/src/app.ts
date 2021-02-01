@@ -21,9 +21,14 @@ export class App {
     Debugger.init(this.ui);
   }
 
-  public async init(): Promise<void> {
+  public async init(debug = false): Promise<void> {
     await this.initResources();
     await this.initClient();
+
+    if (debug) {
+      await this.game.joinRoom('room0');
+    }
+
     this.initKeyboard();
 
     this.client.eventEmitter.on('disconnect', () => {
@@ -48,6 +53,7 @@ export class App {
     try {
       this.ui.showMessage(message);
       await this.client.connect(timeout);
+
       this.ui.clearMessage();
     } catch (err) {
       if (err instanceof ClientError || err instanceof ServerError) {

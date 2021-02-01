@@ -1,3 +1,4 @@
+from ecs.base_system import ExternalEvent
 from typing import Union, Dict, Callable, Optional
 from time import time
 import logging
@@ -26,8 +27,14 @@ class Server(socketio.Namespace):
         self.callback_short: Callable = partial(self.sio.emit, 'short_sync')
         self.callback_long: Callable = partial(self.sio.emit, 'long_sync')
 
+    def _init_debug_room(self, name: str):
+        room = self.game._create_room(ci.CreateRoomDTO(name, False))
+        self.game.trigger_event(ExternalEvent.GAME_INIT, room.id, room)
+
     def sync(self, shutdown_flag: threading.Event, ticks_per_second):
         frame = 0
+        self._init_debug_room('debug room')
+
         while not shutdown_flag.is_set():
             self.tick(frame == 0)
             self._last_update = time()
