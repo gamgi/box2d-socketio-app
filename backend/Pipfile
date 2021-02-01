@@ -19,6 +19,7 @@ python-socketio = "*"
 box2d = "*"
 dataclass-factory = "*"
 typing_extensions = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.8"
