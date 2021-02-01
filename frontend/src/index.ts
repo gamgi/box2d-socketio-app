@@ -9,10 +9,12 @@ async function init(pixi: Application) {
   const keyboard = new Keyboard();
   const game = new Game(pixi, client);
   const app = new App(pixi, client, keyboard, game);
-  await app.init();
+  await app.init(true);
 
   while (true) {
     await app.run();
+    // eslint-disable-next-line no-console
+    console.log('reconnecting');
     await app.reconnect();
   }
 }
