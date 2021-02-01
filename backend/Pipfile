@@ -31,6 +31,7 @@ python_version = "3.8"
 "lint" = "autopep8 --in-place --aggressive --aggressive --recursive --max-line-length 120 ./"
 "mypy" = "mypy --check-untyped-defs ./"
 "start" = "python main.py"
+"foo" = "bar"
 
 [pipenv]
 allow_prereleases = true
