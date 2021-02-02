@@ -17,7 +17,10 @@ class BodyType(int, Enum):
     DYNAMIC = b2_dynamicBody
 
 
-CORS_ALLOWED_ORIGINS = ['*', 'http://localhost:9000', 'http://localhost:5000']
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:9000',
+    'http://localhost:5000',
+    'https://box2d-socketio-app.herokuapp.com']
 
 ASSET_FILES = {
     '/assets/missing.svg': {'filename': '../frontend/src/assets/missing.svg', 'content_type': 'image/svg+xml'}
