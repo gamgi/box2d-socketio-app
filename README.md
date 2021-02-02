@@ -1,4 +1,4 @@
-# Networked Physics Simulation
+# Networked Multiplayer Physics Simulation
 
 * Server runnin physics simulation (authoritative)
 * Client interpolation using cubic splines
