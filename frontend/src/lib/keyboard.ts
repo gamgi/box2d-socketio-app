@@ -16,6 +16,7 @@ export enum Action {
   MoveDown = 'MoveDown',
   MoveLeft = 'MoveLeft',
   MoveRight = 'MoveRight',
+  Restart = 'Restart',
 }
 
 export interface KeyboardContext {
@@ -35,6 +36,7 @@ const defaultControls: Controls = {
   MoveDown: Key.ArrowDown,
   MoveLeft: Key.ArrowLeft,
   MoveRight: Key.ArrowRight,
+  Restart: Key.Enter,
 };
 
 export class Keyboard {
