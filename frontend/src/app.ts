@@ -26,7 +26,14 @@ export class App {
     await this.initClient();
 
     if (debug) {
-      await this.game.joinRoom('room0');
+      try {
+        await this.game.joinRoom('room0');
+      } catch (err) {
+        if (err instanceof ClientError || err instanceof ServerError) {
+          this.ui.showMessage(`${err.userMessage}: ${err.message}`, MessageLevel.ERROR);
+        }
+        throw err;
+      }
     }
 
     this.initKeyboard();
