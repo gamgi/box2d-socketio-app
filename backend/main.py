@@ -22,7 +22,7 @@ def main():
             '/': '../frontend/build/index.html',
             '/bundle.js': '../frontend/build/bundle.js',
             '/static': '../frontend/build',
-            **ASSET_FILES
+            **ASSET_FILES  # type:ignore
         })
         game = Game(SYSTEMS, repository_factory)
 
