@@ -12,7 +12,7 @@ from server.decorators import returns_error_dto
 from game.game import Game
 logging.basicConfig(level=logging.INFO)
 
-TICKS_PER_SECOND = 10
+TICKS_PER_SECOND = 12
 PORT = int(os.environ.get("PORT", 5000))
 
 
