@@ -66,3 +66,13 @@ export function evalSpline(spline: Spline, t: number): Vec2 {
   const y = spline.a[1] * t ** 3 + spline.b[1] * t ** 2 + spline.c[1] * t + spline.d[1];
   return [x, y];
 }
+
+const PI = Math.PI;
+const twoPI = 2 * Math.PI;
+const threePI = 3 * Math.PI;
+
+export const evalAngle = (start: number, end: number, t: number): number => {
+  // https://stackoverflow.com/questions/2708476/rotation-interpolation
+  const shortestAngle = ((((end - start) % twoPI) + threePI) % twoPI) - PI;
+  return start + ((shortestAngle * t) % twoPI);
+};

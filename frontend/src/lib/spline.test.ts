@@ -1,5 +1,5 @@
 import { Vec2 } from './types';
-import { createLinear, createSpline, evalSpline, Spline } from './spline';
+import { createLinear, createSpline, evalSpline, Spline, evalAngle } from './spline';
 
 describe('createSpline', () => {
   it('sets c1 and c4 as start and end position', () => {
@@ -98,5 +98,27 @@ describe('createLinear', () => {
     const line = createLinear(startPosition, velocity, 1);
     expect(evalSpline(line, 0)).toEqual([2, 3]);
     expect(evalSpline(line, 1)).toEqual([3, 5]);
+  });
+});
+
+describe('evalAngle', () => {
+  it('evaluates t=0 as start position', () => {
+    const startAngle = 1;
+    const endAngle = Math.PI / 2;
+    expect(evalAngle(startAngle, endAngle, 0)).toEqual(startAngle);
+  });
+
+  it('evaluates t=0.5 as middle point', () => {
+    const startAngle = 1;
+    const endAngle = 2;
+    const midPoint = 1.5;
+    expect(evalAngle(startAngle, endAngle, 0.5)).toEqual(midPoint);
+  });
+
+  it('evaluates t=1 as end position', () => {
+    const startAngle = 1;
+    const endAngle = Math.PI / 2;
+
+    expect(evalAngle(startAngle, endAngle, 1)).toEqual(endAngle);
   });
 });
