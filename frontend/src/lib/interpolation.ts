@@ -45,6 +45,11 @@ export class InterpolatedSprite {
     this.sprite.position.set(x, y);
   }
 
+  public snap(): void {
+    const position = this.interpolationData.position;
+    this.sprite.position.set(position[0], position[1]);
+  }
+
   public recalculateInterpolation(newData: InterpolationData, serverDeltaTime: number, localDeltaFrames: number): void {
     const oldData = this.interpolationData;
     const oldPos: Vec2 = [this.sprite.position.x, this.sprite.position.y];
@@ -70,13 +75,18 @@ export class Interpolator {
   public packetDelay = 0;
   private elapsedFrames = 0;
   private sprites: InterpolatedSprite[] = [];
+  public isInterpolationEnabled = true;
 
   constructor(pixi: Application) {
     this.tLastUpdate = performance.now();
     pixi.ticker.add(() => {
       this.elapsedFrames++;
       this.sprites = this.sprites.filter((sprite) => !isDestroyed(sprite.sprite));
-      this.sprites.forEach((sprite) => sprite.interpolate(1));
+      if (this.isInterpolationEnabled) {
+        this.sprites.forEach((sprite) => sprite.interpolate(1));
+      } else {
+        this.sprites.forEach((sprite) => sprite.snap());
+      }
     });
   }
 

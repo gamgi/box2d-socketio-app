@@ -1,4 +1,4 @@
-import Pixi from 'pixi.js';
+import Pixi, { Ticker } from 'pixi.js';
 import { mocked } from 'ts-jest/utils';
 
 const ActualPIXI = jest.requireActual<typeof Pixi>('pixi.js');
@@ -33,6 +33,7 @@ const MockApplication = MockedPIXI.Application;
 export class Application extends MockApplication {
   stage: Pixi.Container = new Container();
   screen = new Rectangle(0, 0, 800, 600);
+  ticker = { add: jest.fn() as any } as jest.Mocked<Ticker>;
 }
 
 export default MockedPIXI;

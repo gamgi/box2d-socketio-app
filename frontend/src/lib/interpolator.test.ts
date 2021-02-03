@@ -1,6 +1,7 @@
-import { Sprite } from 'pixi.js';
+import { Sprite, Ticker } from 'pixi.js';
 import { evalSpline } from './spline';
-import { InterpolatedSprite } from './interpolation';
+import { Application } from 'pixi.js';
+import { Interpolator, InterpolatedSprite } from './interpolation';
 import { Vec2 } from './types';
 
 const mockSprite = new Sprite();
@@ -72,9 +73,28 @@ describe('InterpolatedSprite', () => {
         10,
       );
       interpolated.interpolate(10);
-      expect([interpolated.sprite.position.x, interpolated.sprite.position.y]).toEqual([6, 6]);
+      expect([interpolated.sprite.position.x, interpolated.sprite.position.y]).toEqual([5.5, 5.5]);
       interpolated.interpolate(20);
-      expect([interpolated.sprite.position.x, interpolated.sprite.position.y]).toEqual([8, 8]);
+      expect([interpolated.sprite.position.x, interpolated.sprite.position.y]).toEqual([6.5, 6.5]);
     });
+  });
+});
+
+describe('interpolator', () => {
+  it('snaps to current location if disabled', () => {
+    const pixi = new Application();
+    const ticker = pixi.ticker as jest.Mocked<Ticker>;
+    const sprite = new Sprite();
+    const interpolator = new Interpolator(pixi);
+
+    interpolator.isInterpolationEnabled = false;
+
+    interpolator.new(sprite, { position: [0, 1], velocity: [0, 0] });
+    expect(ticker.add).toHaveBeenCalledTimes(1);
+
+    const tickCallback = ticker.add.mock.calls[0][0];
+    tickCallback();
+
+    expect([sprite.position.x, sprite.position.y]).toEqual([0, 1]);
   });
 });
