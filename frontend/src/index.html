@@ -5,6 +5,12 @@
     <link rel="stylesheet" href="static/style.css">
   </head>
   <body>
+    <div id="menu">
+      <div class="menu-item">
+        <input type="checkbox" id="interpolation" name="interpolation" checked>
+        <label for="interpolation">Enable Client Interpolation</label>
+      </div>
+    </div>
     <canvas id="canvas"></canvas>
     <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
       <script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>

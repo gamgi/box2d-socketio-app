@@ -21,7 +21,22 @@ body>* {
     margin: 0.5em auto 0 auto;
 }
 
+#menu {
+    box-sizing: border-box;
+    background-color: #eee;
+    display: flex;
+    width: 800px;
+    justify-content: space-arounddd;
+}
+
+#menu .menu-item {
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+}
+
 canvas {
+    margin-top: 0;
     width: 800px;
     height: 600px;
 }

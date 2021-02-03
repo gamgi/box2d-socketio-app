@@ -20,6 +20,13 @@ export class EntityManager {
 
   constructor(private pixi: Application, private stage: Container) {
     this.interpolator = new Interpolator(pixi);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      document.querySelector('#interpolation')!.addEventListener('change', (e) => {
+        this.interpolator.isInterpolationEnabled = (e.target as HTMLInputElement).checked;
+      });
+    });
   }
 
   public onReceiveData(): void {
